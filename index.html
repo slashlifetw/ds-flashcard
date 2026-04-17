@@ -650,11 +650,13 @@ function openEdit(id) {
 
 function go_add_new() {
   editId = null;
-  document.getElementById("add-title").textContent = "新增題目";
-  document.getElementById("f-category").value = "Tree";
-  document.getElementById("f-question").value = "";
-  document.getElementById("f-answer").value = "";
-  go("add");
+  _go("add");
+  setTimeout(() => {
+    document.getElementById("add-title").textContent = "新增題目";
+    document.getElementById("f-category").value = "Tree";
+    document.getElementById("f-question").value = "";
+    document.getElementById("f-answer").value = "";
+  }, 0);
 }
 
 async function saveCard() {
