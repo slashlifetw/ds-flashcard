@@ -384,20 +384,79 @@ function openCats(){
   showScreen('cats');
   setTimeout(renderCatList, 80);
 }
+let dragSrc=null;
+
 function renderCatList(){
   const el=document.getElementById('cat-list');if(!el)return;
-  // Always show 其他 last
-  const display=sortedCats();
+  const display=sortedCats(); // 其他 always last
   el.innerHTML=display.map(cat=>{
     const cnt=cards.filter(c=>c.category===cat).length;
-    const right=cat===PROTECTED_CAT
+    const isProtected=cat===PROTECTED_CAT;
+    const handle=isProtected
+      ?`<span style="font-size:16px;color:var(--hint);cursor:default;user-select:none;padding:0 4px">⋮⋮</span>`
+      :`<span class="drag-handle" data-cat="${cat}" title="拖拉排序" style="font-size:16px;color:var(--hint);cursor:grab;user-select:none;padding:0 4px;touch-action:none">⋮⋮</span>`;
+    const right=isProtected
       ?`<span style="font-size:11px;color:var(--hint);padding:3px 8px;border:1px solid var(--border);border-radius:4px">不可刪除</span>`
       :`<button class="btn-sm danger" onclick="deleteCat('${cat}')">刪除</button>`;
-    return`<div class="cat-item">
-      <div style="display:flex;align-items:center;gap:8px">${badgeHtml(cat)}<span class="muted" style="font-size:11px">${cnt} 題</span></div>
+    return`<div class="cat-item" draggable="${!isProtected}" data-cat="${cat}"
+      ondragstart="onDragStart(event)"
+      ondragover="onDragOver(event)"
+      ondrop="onDrop(event)"
+      ondragend="onDragEnd(event)"
+      style="cursor:default">
+      <div style="display:flex;align-items:center;gap:6px">
+        ${handle}
+        ${badgeHtml(cat)}
+        <span class="muted" style="font-size:11px">${cnt} 題</span>
+      </div>
       ${right}
     </div>`;
   }).join('');
+  // hint
+  const hint=el.parentElement.querySelector('.drag-hint');
+  if(!hint){
+    const h=document.createElement('div');
+    h.className='drag-hint muted';
+    h.style.cssText='font-size:11px;text-align:center;padding:8px 0 2px';
+    h.textContent='⋮⋮ 拖拉圖示可調整順序（「其他」固定在最後）';
+    el.after(h);
+  }
+}
+
+function onDragStart(e){
+  const cat=e.currentTarget.dataset.cat;
+  if(cat===PROTECTED_CAT){e.preventDefault();return}
+  dragSrc=cat;
+  e.dataTransfer.effectAllowed='move';
+  e.currentTarget.style.opacity='0.4';
+}
+function onDragOver(e){
+  e.preventDefault();
+  const target=e.currentTarget;
+  if(target.dataset.cat===PROTECTED_CAT||target.dataset.cat===dragSrc)return;
+  e.dataTransfer.dropEffect='move';
+  target.style.background='var(--accent-light)';
+}
+function onDrop(e){
+  e.preventDefault();
+  const targetCat=e.currentTarget.dataset.cat;
+  if(!dragSrc||targetCat===dragSrc||targetCat===PROTECTED_CAT)return;
+  // Reorder: remove dragSrc, insert before targetCat (both in non-protected list)
+  const nonProtected=categories.filter(c=>c!==PROTECTED_CAT);
+  const srcIdx=nonProtected.indexOf(dragSrc);
+  const tgtIdx=nonProtected.indexOf(targetCat);
+  if(srcIdx<0||tgtIdx<0)return;
+  nonProtected.splice(srcIdx,1);
+  nonProtected.splice(tgtIdx,0,dragSrc);
+  categories=[...nonProtected,PROTECTED_CAT];
+  saveToDrive().catch(()=>{});
+  renderCatList();
+}
+function onDragEnd(e){
+  dragSrc=null;
+  document.querySelectorAll('.cat-item').forEach(el=>{
+    el.style.opacity='';el.style.background='';
+  });
 }
 function populateCatSelect(){
   const sel=document.getElementById('f-category');if(!sel)return;
