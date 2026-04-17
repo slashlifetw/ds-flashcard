@@ -384,79 +384,90 @@ function openCats(){
   showScreen('cats');
   setTimeout(renderCatList, 80);
 }
-let dragSrc=null;
+let dragSrc=null, dragGhost=null, dragOffsetY=0;
 
 function renderCatList(){
   const el=document.getElementById('cat-list');if(!el)return;
-  const display=sortedCats(); // 其他 always last
-  el.innerHTML=display.map(cat=>{
+  const display=sortedCats();
+  el.innerHTML=`<div style="font-size:11px;color:var(--muted);padding:0 0 8px 0;border-bottom:1px solid var(--border);margin-bottom:4px">長按或按住左側 ☰ 圖示可拖拉排序・「其他」固定在最後</div>`
+  +display.map(cat=>{
     const cnt=cards.filter(c=>c.category===cat).length;
     const isProtected=cat===PROTECTED_CAT;
-    const handle=isProtected
-      ?`<span style="font-size:16px;color:var(--hint);cursor:default;user-select:none;padding:0 4px">⋮⋮</span>`
-      :`<span class="drag-handle" data-cat="${cat}" title="拖拉排序" style="font-size:16px;color:var(--hint);cursor:grab;user-select:none;padding:0 4px;touch-action:none">⋮⋮</span>`;
+    const handleStyle=isProtected
+      ?'width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:16px;flex-shrink:0'
+      :'width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#555;font-size:16px;cursor:grab;flex-shrink:0;background:var(--bg);border:1px solid var(--border);border-radius:6px;touch-action:none;user-select:none';
     const right=isProtected
-      ?`<span style="font-size:11px;color:var(--hint);padding:3px 8px;border:1px solid var(--border);border-radius:4px">不可刪除</span>`
-      :`<button class="btn-sm danger" onclick="deleteCat('${cat}')">刪除</button>`;
-    return`<div class="cat-item" draggable="${!isProtected}" data-cat="${cat}"
-      ondragstart="onDragStart(event)"
-      ondragover="onDragOver(event)"
-      ondrop="onDrop(event)"
-      ondragend="onDragEnd(event)"
-      style="cursor:default">
-      <div style="display:flex;align-items:center;gap:6px">
-        ${handle}
+      ?`<span style="font-size:11px;color:var(--hint);padding:3px 8px;border:1px solid var(--border);border-radius:4px;flex-shrink:0">不可刪除</span>`
+      :`<button class="btn-sm danger" onclick="deleteCat('${cat}')" style="flex-shrink:0">刪除</button>`;
+    return`<div class="cat-item" data-cat="${cat}" style="gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+        <div class="drag-handle" data-cat="${cat}" style="${handleStyle}"${isProtected?'':' id="h_'+cat.replace(/[^a-z0-9]/gi,'_')+'"'}>${isProtected?'☰':'☰'}</div>
         ${badgeHtml(cat)}
         <span class="muted" style="font-size:11px">${cnt} 題</span>
       </div>
       ${right}
     </div>`;
   }).join('');
-  // hint
-  const hint=el.parentElement.querySelector('.drag-hint');
-  if(!hint){
-    const h=document.createElement('div');
-    h.className='drag-hint muted';
-    h.style.cssText='font-size:11px;text-align:center;padding:8px 0 2px';
-    h.textContent='⋮⋮ 拖拉圖示可調整順序（「其他」固定在最後）';
-    el.after(h);
-  }
+  // Attach touch+mouse listeners to handles
+  el.querySelectorAll('.drag-handle[data-cat]').forEach(h=>{
+    const cat=h.dataset.cat;
+    if(cat===PROTECTED_CAT)return;
+    h.addEventListener('mousedown', e=>{e.preventDefault();startDrag(cat,e.clientY);});
+    h.addEventListener('touchstart', e=>{e.preventDefault();startDrag(cat,e.touches[0].clientY);},{passive:false});
+  });
 }
 
-function onDragStart(e){
-  const cat=e.currentTarget.dataset.cat;
-  if(cat===PROTECTED_CAT){e.preventDefault();return}
+function startDrag(cat,startY){
+  if(cat===PROTECTED_CAT)return;
   dragSrc=cat;
-  e.dataTransfer.effectAllowed='move';
-  e.currentTarget.style.opacity='0.4';
-}
-function onDragOver(e){
-  e.preventDefault();
-  const target=e.currentTarget;
-  if(target.dataset.cat===PROTECTED_CAT||target.dataset.cat===dragSrc)return;
-  e.dataTransfer.dropEffect='move';
-  target.style.background='var(--accent-light)';
-}
-function onDrop(e){
-  e.preventDefault();
-  const targetCat=e.currentTarget.dataset.cat;
-  if(!dragSrc||targetCat===dragSrc||targetCat===PROTECTED_CAT)return;
-  // Reorder: remove dragSrc, insert before targetCat (both in non-protected list)
-  const nonProtected=categories.filter(c=>c!==PROTECTED_CAT);
-  const srcIdx=nonProtected.indexOf(dragSrc);
-  const tgtIdx=nonProtected.indexOf(targetCat);
-  if(srcIdx<0||tgtIdx<0)return;
-  nonProtected.splice(srcIdx,1);
-  nonProtected.splice(tgtIdx,0,dragSrc);
-  categories=[...nonProtected,PROTECTED_CAT];
-  saveToDrive().catch(()=>{});
-  renderCatList();
-}
-function onDragEnd(e){
-  dragSrc=null;
-  document.querySelectorAll('.cat-item').forEach(el=>{
-    el.style.opacity='';el.style.background='';
+  const srcRow=document.querySelector(`.cat-item[data-cat="${cat}"]`);
+  if(!srcRow)return;
+  const rect=srcRow.getBoundingClientRect();
+  dragOffsetY=startY-rect.top;
+  dragGhost=srcRow.cloneNode(true);
+  Object.assign(dragGhost.style,{
+    position:'fixed',left:rect.left+'px',top:rect.top+'px',
+    width:rect.width+'px',zIndex:'999',opacity:'0.88',
+    background:'var(--surface)',boxShadow:'0 6px 20px rgba(0,0,0,.18)',
+    borderRadius:'8px',pointerEvents:'none',transition:'none',margin:'0'
   });
+  document.body.appendChild(dragGhost);
+  srcRow.style.opacity='0.25';
+  document.addEventListener('mousemove',onDragMove);
+  document.addEventListener('mouseup',onDragRelease);
+  document.addEventListener('touchmove',onTouchMove,{passive:false});
+  document.addEventListener('touchend',onTouchRelease);
+}
+function onTouchMove(e){e.preventDefault();moveDragGhost(e.touches[0].clientY);highlightTarget(e.touches[0].clientX,e.touches[0].clientY);}
+function onDragMove(e){moveDragGhost(e.clientY);highlightTarget(e.clientX,e.clientY);}
+function moveDragGhost(clientY){if(dragGhost)dragGhost.style.top=(clientY-dragOffsetY)+'px';}
+function highlightTarget(cx,cy){
+  document.querySelectorAll('.cat-item').forEach(r=>r.style.background='');
+  if(dragGhost)dragGhost.style.display='none';
+  const el=document.elementFromPoint(cx,cy);
+  if(dragGhost)dragGhost.style.display='';
+  const row=el?.closest('.cat-item');
+  if(row&&row.dataset.cat&&row.dataset.cat!==dragSrc&&row.dataset.cat!==PROTECTED_CAT)
+    row.style.background='var(--accent-light)';
+}
+function onTouchRelease(e){finishDrag(e.changedTouches[0].clientX,e.changedTouches[0].clientY);}
+function onDragRelease(e){finishDrag(e.clientX,e.clientY);}
+function finishDrag(cx,cy){
+  document.removeEventListener('mousemove',onDragMove);document.removeEventListener('mouseup',onDragRelease);
+  document.removeEventListener('touchmove',onTouchMove);document.removeEventListener('touchend',onTouchRelease);
+  if(dragGhost){dragGhost.remove();dragGhost=null;}
+  document.querySelectorAll('.cat-item').forEach(r=>{r.style.background='';r.style.opacity='';});
+  if(dragGhost)dragGhost.style.display='none';
+  const el=document.elementFromPoint(cx,cy);
+  const row=el?.closest('.cat-item');
+  const targetCat=row?.dataset.cat;
+  if(dragSrc&&targetCat&&targetCat!==dragSrc&&targetCat!==PROTECTED_CAT){
+    const np=categories.filter(c=>c!==PROTECTED_CAT);
+    const si=np.indexOf(dragSrc),ti=np.indexOf(targetCat);
+    if(si>=0&&ti>=0){np.splice(si,1);np.splice(ti,0,dragSrc);categories=[...np,PROTECTED_CAT];saveToDrive().catch(()=>{});}
+  }
+  dragSrc=null;
+  renderCatList();
 }
 function populateCatSelect(){
   const sel=document.getElementById('f-category');if(!sel)return;
