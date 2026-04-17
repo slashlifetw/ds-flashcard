@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>DS Flashcard</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -17,81 +19,51 @@
   --radius: 10px; --radius-sm: 6px;
 }
 body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
-
-/* ── screens ── */
 .screen { display: none; max-width: 540px; margin: 0 auto; padding: 16px 16px 60px; }
 .screen.active { display: block; }
-
-/* ── topbar ── */
 .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; position: sticky; top: 0; z-index: 50; max-width: 540px; margin: 0 auto; }
 .topbar-row { display: flex; align-items: center; gap: 10px; }
-.back-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: var(--radius-sm); padding: 5px 11px; font-size: 12px; cursor: pointer; }
-
-/* ── cards ── */
+.back-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: var(--radius-sm); padding: 5px 11px; font-size: 12px; cursor: pointer; -webkit-appearance: none; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
-
-/* ── buttons ── */
-.btn { display: block; width: 100%; padding: 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 8px; border: none; text-align: center; }
+.btn { display: block; width: 100%; padding: 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 8px; border: none; text-align: center; -webkit-appearance: none; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:disabled { background: var(--hint); cursor: not-allowed; }
 .btn-secondary { background: none; border: 1px solid var(--border); color: var(--text); }
-.btn-danger { background: none; border: 1px solid var(--danger-border); color: var(--danger); }
-.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; -webkit-appearance: none; }
 .btn-sm.danger { color: var(--danger); border-color: var(--danger-border); }
-.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-weight: 600; cursor: pointer; }
-
-/* ── form ── */
+.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
 label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: 4px; }
-input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--surface); color: var(--text); margin-bottom: 12px; }
+input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--surface); color: var(--text); margin-bottom: 12px; -webkit-appearance: none; border-radius: var(--radius-sm); }
 textarea { resize: vertical; }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
-
-/* ── badges ── */
 .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-
-/* ── alerts ── */
 .alert { border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; line-height: 1.6; margin: 10px 0; }
 .alert-warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-text); }
-.alert-success { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success); }
-.alert-danger { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); }
 .alert-info { background: var(--accent-light); border: 1px solid #c7d2fe; color: var(--accent-text); }
-
-/* ── stat grid ── */
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
 .stat-cell { background: var(--surface); padding: 14px 10px; text-align: center; }
 .stat-num { font-size: 24px; font-weight: 700; }
 .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-/* ── progress ── */
 .prog-wrap { background: var(--border); border-radius: 10px; height: 4px; margin-top: 8px; }
 .prog-bar { background: var(--accent); height: 4px; border-radius: 10px; transition: width .3s; }
-
-/* ── canvas area ── */
-#draw-canvas { touch-action: none; cursor: crosshair; display: block; width: 100%; border-radius: var(--radius-sm); background: #fff; }
-.canvas-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.pen-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#draw-canvas { touch-action: none; cursor: crosshair; display: block; width: 100%; }
+.pen-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; }
 .pen-btn.active { border-color: var(--accent); background: var(--accent-light); }
-
-/* ── result card ── */
 .result-card { border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
 .result-card.correct { background: var(--success-bg); border: 1px solid var(--success-border); }
 .result-card.wrong { background: var(--danger-bg); border: 1px solid var(--danger-border); }
-.result-icon { font-size: 28px; margin-bottom: 6px; }
-.result-verdict { font-size: 16px; font-weight: 700; }
-.result-feedback { font-size: 13px; margin-top: 4px; }
-
-/* ── manage list ── */
 .card-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; }
-.card-item-row { display: flex; align-items: flex-start; gap: 10px; }
-.card-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-/* ── loading overlay ── */
-#loading { position: fixed; inset: 0; background: rgba(255,255,255,.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; gap: 12px; font-size: 13px; color: var(--muted); }
+/* Math toolbar */
+.math-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; padding: 8px; background: var(--bg); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+.math-btn { padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); cursor: pointer; color: var(--accent-text); -webkit-appearance: none; white-space: nowrap; font-family: 'Courier New', monospace; }
+.math-btn:active { background: var(--accent-light); }
+.math-preview { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; min-height: 36px; margin-bottom: 12px; font-size: 13px; line-height: 1.9; }
+.math-hint { font-size: 11px; color: var(--muted); margin-top: -8px; margin-bottom: 6px; }
+.math-render .katex { font-size: 1em; }
+#loading { position: fixed; inset: 0; background: rgba(255,255,255,.92); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; gap: 12px; font-size: 13px; color: var(--muted); }
 #loading.hidden { display: none; }
 .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── misc ── */
 .muted { font-size: 12px; color: var(--muted); }
 .section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
 h2 { font-size: 16px; font-weight: 700; }
@@ -100,10 +72,9 @@ h2 { font-size: 16px; font-weight: 700; }
 </head>
 <body>
 
-<!-- Loading -->
 <div id="loading"><div class="spinner"></div><span id="loading-text">載入中…</span></div>
 
-<!-- ══ SCREEN: Setup ══ -->
+<!-- Setup -->
 <div id="screen-setup" class="screen">
   <div style="padding-top:32px;text-align:center;margin-bottom:28px">
     <div style="font-size:36px;margin-bottom:8px">📚</div>
@@ -111,18 +82,15 @@ h2 { font-size: 16px; font-weight: 700; }
     <div class="muted">研究所資料結構備考系統</div>
   </div>
   <div class="card">
-    <div class="section-title">第一步：輸入 Anthropic API Key</div>
-    <div class="alert alert-info">AI 批改功能需要此 Key。Key 只儲存在你的瀏覽器裡，不會上傳到任何地方。</div>
+    <div class="section-title">輸入 Anthropic API Key</div>
+    <div class="alert alert-info">AI 批改需要此 Key，只儲存在你的瀏覽器裡。</div>
     <label>Anthropic API Key</label>
     <input type="password" id="setup-key" placeholder="sk-ant-xxxxxxxxxxxxxxxx">
-    <div class="alert alert-warn">
-      前往 <strong>console.anthropic.com → API Keys → Create Key</strong> 取得，需先加值（建議 $5 USD）。
-    </div>
     <button class="btn btn-primary" onclick="saveSetup()">儲存並繼續</button>
   </div>
 </div>
 
-<!-- ══ SCREEN: Login ══ -->
+<!-- Login -->
 <div id="screen-login" class="screen">
   <div style="padding-top:48px;text-align:center;margin-bottom:32px">
     <div style="font-size:40px;margin-bottom:10px">📚</div>
@@ -134,17 +102,17 @@ h2 { font-size: 16px; font-weight: 700; }
     使用 Google 帳號登入
   </button>
   <div style="text-align:center;margin-top:14px">
-    <span class="muted" style="cursor:pointer;text-decoration:underline" onclick="goSetup()">重新設定 API Key</span>
+    <span class="muted" style="cursor:pointer;text-decoration:underline" onclick="showScreen('setup')">重新設定 API Key</span>
   </div>
 </div>
 
-<!-- ══ SCREEN: Home ══ -->
+<!-- Home -->
 <div id="screen-home" class="screen">
   <div class="topbar">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
         <div class="muted" style="font-size:11px">DS Flashcard</div>
-        <div style="font-weight:700;font-size:16px" id="home-greeting">早安！</div>
+        <div style="font-weight:700;font-size:16px" id="home-greeting">備考中！</div>
       </div>
       <button class="btn-sm" onclick="signOut()">登出</button>
     </div>
@@ -152,7 +120,7 @@ h2 { font-size: 16px; font-weight: 700; }
   <div id="home-body" style="padding:14px 0 0"></div>
 </div>
 
-<!-- ══ SCREEN: Quiz ══ -->
+<!-- Quiz -->
 <div id="screen-quiz" class="screen" style="padding:0">
   <div class="topbar">
     <div class="topbar-row" style="justify-content:space-between">
@@ -160,36 +128,36 @@ h2 { font-size: 16px; font-weight: 700; }
         <button class="back-btn" onclick="exitQuiz()">← 離開</button>
         <div>
           <div class="muted" style="font-size:11px" id="quiz-cat"></div>
-          <div style="font-weight:700" id="quiz-progress">1 / 1</div>
+          <div style="font-weight:700" id="quiz-progress"></div>
         </div>
       </div>
-      <div class="muted" id="quiz-pct">0%</div>
+      <div class="muted" id="quiz-pct"></div>
     </div>
     <div class="prog-wrap"><div class="prog-bar" id="quiz-prog-bar" style="width:0%"></div></div>
   </div>
   <div style="padding:14px 16px 60px" id="quiz-body"></div>
 </div>
 
-<!-- ══ SCREEN: Manage ══ -->
+<!-- Manage -->
 <div id="screen-manage" class="screen" style="padding:0">
   <div class="topbar">
     <div class="topbar-row" style="justify-content:space-between">
       <div class="topbar-row">
-        <button class="back-btn" onclick="go('home')">← 返回</button>
+        <button class="back-btn" onclick="showScreen('home');renderHome()">← 返回</button>
         <h2>題庫管理</h2>
       </div>
-      <button class="btn btn-primary" style="width:auto;padding:6px 14px;margin:0;font-size:13px" onclick="go('add')">＋ 新增</button>
+      <button class="btn btn-primary" style="width:auto;padding:6px 14px;margin:0;font-size:13px" onclick="openAddNew()">＋ 新增</button>
     </div>
     <input type="search" id="search-input" placeholder="搜尋題目或分類…" style="margin-top:10px;margin-bottom:0" oninput="renderManage()">
   </div>
   <div style="padding:12px 16px 60px" id="manage-body"></div>
 </div>
 
-<!-- ══ SCREEN: Add/Edit ══ -->
+<!-- Add/Edit -->
 <div id="screen-add" class="screen" style="padding:0">
   <div class="topbar">
     <div class="topbar-row">
-      <button class="back-btn" onclick="go('manage')">← 返回</button>
+      <button class="back-btn" onclick="showScreen('manage');renderManage()">← 返回</button>
       <h2 id="add-title">新增題目</h2>
     </div>
   </div>
@@ -200,514 +168,395 @@ h2 { font-size: 16px; font-weight: 700; }
         <option>Tree</option><option>Graph</option><option>Sorting</option>
         <option>Hashing</option><option>Heap</option><option>Dynamic Programming</option><option>其他</option>
       </select>
+
       <label>題目</label>
-      <textarea id="f-question" rows="4" placeholder="輸入題目…"></textarea>
+      <div class="math-toolbar" id="toolbar-q"></div>
+      <textarea id="f-question" rows="4" placeholder="輸入題目… 數學式用 $…$ 包住，例如 $O(n^2)$、$\log n$" oninput="updatePreview('q')"></textarea>
+      <div class="math-hint">▸ 預覽（數學式會自動渲染）</div>
+      <div class="math-preview math-render" id="preview-q"></div>
+
       <label>標準答案</label>
-      <textarea id="f-answer" rows="5" placeholder="輸入標準答案（AI 批改時會比對此內容）…"></textarea>
+      <div class="math-toolbar" id="toolbar-a"></div>
+      <textarea id="f-answer" rows="6" placeholder="輸入標準答案…" oninput="updatePreview('a')"></textarea>
+      <div class="math-hint">▸ 預覽</div>
+      <div class="math-preview math-render" id="preview-a"></div>
+
       <button class="btn btn-primary" onclick="saveCard()">儲存</button>
-      <button class="btn btn-secondary" onclick="go('manage')">取消</button>
+      <button class="btn btn-secondary" onclick="showScreen('manage');renderManage()">取消</button>
     </div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  CONFIG
-// ══════════════════════════════════════════════
 const CLIENT_ID = "16377008216-n7srio84pbbfkm6q8fdmq3ss3po1pbum.apps.googleusercontent.com";
-const SCOPE     = "https://www.googleapis.com/auth/drive.file";
+const SCOPE = "https://www.googleapis.com/auth/drive.file";
 const FILE_NAME = "ds_flashcards.json";
-
 const CATS = ["Tree","Graph","Sorting","Hashing","Heap","Dynamic Programming","其他"];
-const CAT_COLOR = {
-  Tree:"#ede9fe:#5b21b6", Graph:"#d1fae5:#065f46", Sorting:"#fef9c3:#854d0e",
-  Hashing:"#fee2e2:#991b1b", Heap:"#fce7f3:#9d174d",
-  "Dynamic Programming":"#dbeafe:#1e3a8a", "其他":"#f1f5f9:#475569"
-};
+const CAT_COLOR = { Tree:"#ede9fe:#5b21b6", Graph:"#d1fae5:#065f46", Sorting:"#fef9c3:#854d0e", Hashing:"#fee2e2:#991b1b", Heap:"#fce7f3:#9d174d", "Dynamic Programming":"#dbeafe:#1e3a8a", "其他":"#f1f5f9:#475569" };
 
-// ══════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════
-let accessToken = null;
-let driveFileId = null;
-let cards = [];
-let editId = null;
-let quizQueue = [];
-let quizIdx = 0;
-let quizPhase = "draw"; // draw | grading | result
-let penSize = 3;
-let isDrawing = false;
-let lastPos = null;
+const MATH_SYMS = [
+  {l:"O(n)",v:"$O(n)$"},{l:"O(n²)",v:"$O(n^2)$"},{l:"O(n log n)",v:"$O(n \\log n)$"},
+  {l:"O(log n)",v:"$O(\\log n)$"},{l:"Ω(n)",v:"$\\Omega(n)$"},{l:"Θ(n)",v:"$\\Theta(n)$"},
+  {l:"log",v:"$\\log$"},{l:"lg",v:"$\\lg$"},{l:"√n",v:"$\\sqrt{n}$"},
+  {l:"≤",v:"$\\leq$"},{l:"≥",v:"$\\geq$"},{l:"∞",v:"$\\infty$"},
+  {l:"xⁿ",v:"$x^{}$"},{l:"xₙ",v:"$x_{}$"},{l:"∑",v:"$\\sum_{i=1}^{n}$"},
+  {l:"⌈x⌉",v:"$\\lceil x \\rceil$"},{l:"⌊x⌋",v:"$\\lfloor x \\rfloor$"},
+  {l:"n!",v:"$n!$"},{l:"→",v:"$\\rightarrow$"},{l:"∀",v:"$\\forall$"},
+];
 
-// ══════════════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════════════
+let accessToken=null, driveFileId=null, cards=[], editId=null;
+let quizQueue=[], quizIdx=0, penSize=3, isDrawing=false, lastPos=null;
+
+// ── SCREEN (fixed for iOS) ──
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+  const t = document.getElementById('screen-' + name);
+  if (!t) return;
+  t.style.display = 'block';
+  t.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function loading(show, text) {
+  document.getElementById('loading').classList.toggle('hidden', !show);
+  if (text) document.getElementById('loading-text').textContent = text;
+}
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-
-function loading(show, text="載入中…") {
-  document.getElementById("loading").classList.toggle("hidden", !show);
-  document.getElementById("loading-text").textContent = text;
-}
-
-function go(screen) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById("screen-" + screen).classList.add("active");
-  window.scrollTo(0,0);
-  if (screen === "home") renderHome();
-  if (screen === "manage") renderManage();
-}
-
 function badgeHtml(cat) {
-  const [bg, fg] = (CAT_COLOR[cat] || CAT_COLOR["其他"]).split(":");
+  const [bg,fg] = (CAT_COLOR[cat]||CAT_COLOR["其他"]).split(":");
   return `<span class="badge" style="background:${bg};color:${fg}">${cat}</span>`;
 }
 
-// ══════════════════════════════════════════════
-//  SETUP / API KEY
-// ══════════════════════════════════════════════
-function getApiKey() { return localStorage.getItem("anthropic_key") || ""; }
-
-function saveSetup() {
-  const key = document.getElementById("setup-key").value.trim();
-  if (!key.startsWith("sk-ant-")) {
-    alert("格式不正確，API Key 應以 sk-ant- 開頭");
-    return;
-  }
-  localStorage.setItem("anthropic_key", key);
-  go("login");
+// ── MATH ──
+function renderMath(text) {
+  if (!window.katex || !text) return text || "";
+  const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return escaped.replace(/\$([^$\n]+)\$/g, (_,expr) => {
+    try { return katex.renderToString(expr, {throwOnError:false}); }
+    catch(e) { return '$'+expr+'$'; }
+  });
+}
+function updatePreview(f) {
+  const ta = document.getElementById(f==='q'?'f-question':'f-answer');
+  const pv = document.getElementById('preview-'+f);
+  if (ta && pv) pv.innerHTML = renderMath(ta.value);
+}
+function buildToolbar(tid, targetId) {
+  const tb = document.getElementById(tid);
+  if (!tb) return;
+  tb.innerHTML = '<span style="font-size:11px;color:var(--muted);align-self:center;flex-shrink:0">插入：</span>';
+  MATH_SYMS.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'math-btn'; b.textContent = s.l; b.type = 'button';
+    b.addEventListener('click', () => insertAt(document.getElementById(targetId), s.v));
+    tb.appendChild(b);
+  });
+}
+function insertAt(ta, text) {
+  if (!ta) return;
+  ta.focus();
+  const st=ta.selectionStart, en=ta.selectionEnd;
+  ta.value = ta.value.slice(0,st) + text + ta.value.slice(en);
+  ta.selectionStart = ta.selectionEnd = st + text.length;
+  ta.dispatchEvent(new Event('input'));
 }
 
-function goSetup() { go("setup"); }
+// ── SETUP ──
+function getApiKey() { return localStorage.getItem('anthropic_key')||''; }
+function saveSetup() {
+  const k = document.getElementById('setup-key').value.trim();
+  if (!k.startsWith('sk-ant-')) { alert('格式不正確，應以 sk-ant- 開頭'); return; }
+  localStorage.setItem('anthropic_key', k);
+  showScreen('login');
+}
 
-// ══════════════════════════════════════════════
-//  GOOGLE AUTH
-// ══════════════════════════════════════════════
+// ── GOOGLE AUTH ──
 let tokenClient;
-
 function initGoogleAuth() {
   tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPE,
-    callback: async (resp) => {
-      if (resp.error) { alert("Google 登入失敗：" + resp.error); return; }
+    client_id: CLIENT_ID, scope: SCOPE,
+    callback: async resp => {
+      if (resp.error) { alert('Google 登入失敗：'+resp.error); return; }
       accessToken = resp.access_token;
-      loading(true, "讀取雲端資料…");
+      loading(true,'讀取雲端資料…');
       await loadDriveData();
       loading(false);
-      go("home");
+      showScreen('home');
+      renderHome();
     }
   });
 }
-
 function signIn() { tokenClient.requestAccessToken(); }
-
 function signOut() {
-  if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
-  accessToken = null; driveFileId = null; cards = [];
-  go("login");
+  if (accessToken) google.accounts.oauth2.revoke(accessToken, ()=>{});
+  accessToken=null; driveFileId=null; cards=[];
+  showScreen('login');
 }
 
-// ══════════════════════════════════════════════
-//  GOOGLE DRIVE
-// ══════════════════════════════════════════════
-async function driveRequest(url, options = {}) {
-  const res = await fetch(url, {
-    ...options,
-    headers: { "Authorization": "Bearer " + accessToken, ...(options.headers || {}) }
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error("Drive API 錯誤：" + res.status + " " + err);
-  }
-  return res;
+// ── DRIVE ──
+async function driveReq(url, opts={}) {
+  const r = await fetch(url, {...opts, headers:{"Authorization":"Bearer "+accessToken,...(opts.headers||{})}});
+  if (!r.ok) throw new Error("Drive "+r.status);
+  return r;
 }
-
 async function loadDriveData() {
-  // Search for existing file
-  const search = await driveRequest(
-    `https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id,name)`
-  );
-  const data = await search.json();
-
-  if (data.files && data.files.length > 0) {
-    driveFileId = data.files[0].id;
-    const file = await driveRequest(
-      `https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`
-    );
-    const json = await file.json();
-    cards = json.cards || [];
-  } else {
-    // Create new file with sample data
-    cards = getSampleCards();
-    await saveToDrive();
-  }
+  const r = await driveReq(`https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id)`);
+  const d = await r.json();
+  if (d.files?.length) {
+    driveFileId = d.files[0].id;
+    const f = await driveReq(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
+    const j = await f.json();
+    cards = j.cards || [];
+  } else { cards = getSampleCards(); await saveToDrive(); }
 }
-
 async function saveToDrive() {
-  const body = JSON.stringify({ version: 2, lastSync: Date.now(), cards });
-  const blob = new Blob([body], { type: "application/json" });
-
+  const blob = new Blob([JSON.stringify({version:2,lastSync:Date.now(),cards})],{type:'application/json'});
+  const form = new FormData();
   if (driveFileId) {
-    // Update existing
-    const form = new FormData();
-    form.append("metadata", new Blob([JSON.stringify({ name: FILE_NAME })], { type: "application/json" }));
-    form.append("file", blob);
-    await driveRequest(
-      `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`,
-      { method: "PATCH", body: form }
-    );
+    form.append('metadata', new Blob([JSON.stringify({name:FILE_NAME})],{type:'application/json'}));
+    form.append('file', blob);
+    await driveReq(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`,{method:'PATCH',body:form});
   } else {
-    // Create new
-    const form = new FormData();
-    form.append("metadata", new Blob([JSON.stringify({ name: FILE_NAME, mimeType: "application/json" })], { type: "application/json" }));
-    form.append("file", blob);
-    const res = await driveRequest(
-      `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id`,
-      { method: "POST", body: form }
-    );
-    const created = await res.json();
-    driveFileId = created.id;
+    form.append('metadata', new Blob([JSON.stringify({name:FILE_NAME,mimeType:'application/json'})],{type:'application/json'}));
+    form.append('file', blob);
+    const res = await driveReq(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id`,{method:'POST',body:form});
+    driveFileId = (await res.json()).id;
   }
 }
 
-// ══════════════════════════════════════════════
-//  SM-2
-// ══════════════════════════════════════════════
+// ── SM-2 ──
 function applySmTwo(card, correct) {
-  const c = { ...card };
+  const c = {...card};
   if (correct) {
-    if (c.repetitions === 0) c.interval = 1;
-    else if (c.repetitions === 1) c.interval = 6;
-    else c.interval = Math.round(c.interval * c.easeFactor);
-    c.repetitions++;
-    c.easeFactor = Math.max(1.3, parseFloat((c.easeFactor + 0.1).toFixed(2)));
-  } else {
-    c.repetitions = 0; c.interval = 1;
-    c.easeFactor = Math.max(1.3, parseFloat((c.easeFactor - 0.2).toFixed(2)));
-  }
-  c.nextReview = Date.now() + c.interval * 86400000;
+    if (c.repetitions===0) c.interval=1;
+    else if (c.repetitions===1) c.interval=6;
+    else c.interval=Math.round(c.interval*c.easeFactor);
+    c.repetitions++; c.easeFactor=Math.max(1.3,parseFloat((c.easeFactor+0.1).toFixed(2)));
+  } else { c.repetitions=0; c.interval=1; c.easeFactor=Math.max(1.3,parseFloat((c.easeFactor-0.2).toFixed(2))); }
+  c.nextReview = Date.now()+c.interval*86400000;
   return c;
 }
-
-function createCard(question, answer, category) {
-  return { id: uid(), question, answer, category, repetitions: 0, interval: 1, easeFactor: 2.5, nextReview: Date.now(), createdAt: Date.now() };
-}
-
+function createCard(q,a,cat) { return {id:uid(),question:q,answer:a,category:cat,repetitions:0,interval:1,easeFactor:2.5,nextReview:Date.now(),createdAt:Date.now()}; }
 function getSampleCards() {
   return [
-    { question:"請說明 AVL Tree 的平衡條件，並列舉四種旋轉情況（LL, RR, LR, RL）", answer:"每個節點的左右子樹高度差（Balance Factor）絕對值 ≤ 1。LL→右旋、RR→左旋、LR→先左旋左子再右旋、RL→先右旋右子再左旋。", category:"Tree" },
-    { question:"分析 Quick Sort 的最佳、平均、最差時間複雜度，並說明最差情況何時發生", answer:"最佳 O(n log n)、平均 O(n log n)、最差 O(n²)。最差情況：每次 pivot 選到最大或最小值（如已排序數列選第一個元素）。", category:"Sorting" },
-    { question:"什麼是 Hash Collision？請說明 Chaining 和 Open Addressing 兩種解決方式", answer:"不同 key 映射到相同 hash 值。Chaining：同 slot 用 linked list；Open Addressing：線性探測/二次探測/雙重雜湊找下一個空 slot。", category:"Hashing" },
-    { question:"請說明 Dijkstra 演算法的運作流程與時間複雜度", answer:"單源最短路徑。維護 dist[] 與 visited[]，每次選未訪問中 dist 最小的節點，更新其鄰居。Min-heap：O((V+E)log V)；陣列：O(V²)。", category:"Graph" },
-    { question:"請說明 Heap Sort 的原理與時間複雜度，並說明為何不穩定", answer:"先 Build Max-Heap O(n)，再反覆取出最大值放末尾並 heapify O(log n)，共 n 次，總 O(n log n)。不穩定：heapify 過程中相同鍵值元素相對順序可能改變。", category:"Heap" },
-    { question:"解釋動態規劃的兩個核心性質，並舉一例說明", answer:"最優子結構：問題的最優解包含子問題的最優解；重疊子問題：子問題被重複計算多次。例：Fibonacci 數列，用 memoization 從 O(2ⁿ) 降至 O(n)。", category:"Dynamic Programming" },
-  ].map(s => createCard(s.question, s.answer, s.category));
+    {question:"請說明 AVL Tree 的平衡條件，並列舉四種旋轉情況（LL, RR, LR, RL）",answer:"每個節點左右子樹高度差（Balance Factor）絕對值 $\\leq 1$。LL→右旋、RR→左旋、LR→先左旋左子再右旋、RL→先右旋右子再左旋。",category:"Tree"},
+    {question:"分析 Quick Sort 的最佳、平均、最差時間複雜度，並說明最差情況何時發生",answer:"最佳 $O(n \\log n)$、平均 $O(n \\log n)$、最差 $O(n^2)$。最差情況：每次 pivot 選到最大或最小值（如已排序數列選第一個元素）。",category:"Sorting"},
+    {question:"什麼是 Hash Collision？請說明 Chaining 和 Open Addressing 兩種解決方式",answer:"不同 key 映射到相同 hash 值。Chaining：同 slot 用 linked list；Open Addressing：線性探測 / 二次探測 / 雙重雜湊找下一個空 slot。",category:"Hashing"},
+    {question:"請說明 Dijkstra 演算法的運作流程與時間複雜度",answer:"單源最短路徑。每次選未訪問中 dist 最小的節點更新鄰居。Min-heap：$O((V+E)\\log V)$；陣列：$O(V^2)$。",category:"Graph"},
+    {question:"請說明 Heap Sort 的原理與時間複雜度，並說明為何不穩定",answer:"Build Max-Heap $O(n)$，反覆取出最大值 heapify $O(\\log n)$，共 $n$ 次，總 $O(n \\log n)$。不穩定因 heapify 改變相同鍵值相對順序。",category:"Heap"},
+    {question:"解釋動態規劃的兩個核心性質，並舉一例說明",answer:"最優子結構：最優解包含子問題最優解；重疊子問題：子問題被重複計算。例：Fibonacci 從 $O(2^n)$ 用 memoization 降至 $O(n)$。",category:"Dynamic Programming"},
+  ].map(s=>createCard(s.question,s.answer,s.category));
 }
 
-// ══════════════════════════════════════════════
-//  HOME
-// ══════════════════════════════════════════════
+// ── HOME ──
 function renderHome() {
-  const now = Date.now();
-  const due = cards.filter(c => c.nextReview <= now);
-  const mastered = cards.filter(c => c.repetitions >= 3);
-  const hr = new Date().getHours();
-  const greet = hr < 12 ? "早安！" : hr < 18 ? "午安！" : "晚安！";
-  document.getElementById("home-greeting").textContent = greet;
-
-  // Category stats
-  const catStats = CATS.map(cat => {
-    const total = cards.filter(c => c.category === cat).length;
-    const d = cards.filter(c => c.category === cat && c.nextReview <= now).length;
-    return total ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">${badgeHtml(cat)}<span class="muted">${total} 題${d > 0 ? `，${d} 待複習` : ""}</span></div>` : "";
-  }).join("");
-
-  document.getElementById("home-body").innerHTML = `
+  const now=Date.now(), due=cards.filter(c=>c.nextReview<=now), mastered=cards.filter(c=>c.repetitions>=3);
+  const hr=new Date().getHours();
+  document.getElementById('home-greeting').textContent = hr<12?'早安！':hr<18?'午安！':'晚安！';
+  const catStats = CATS.map(cat=>{
+    const tot=cards.filter(c=>c.category===cat).length;
+    const d=cards.filter(c=>c.category===cat&&c.nextReview<=now).length;
+    return tot?`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">${badgeHtml(cat)}<span class="muted">${tot} 題${d>0?`，${d} 待複習`:''}</span></div>`:'';
+  }).join('');
+  document.getElementById('home-body').innerHTML = `
     <div class="stat-grid">
       <div class="stat-cell"><div class="stat-num" style="color:var(--accent)">${cards.length}</div><div class="stat-lbl">題庫總數</div></div>
-      <div class="stat-cell"><div class="stat-num" style="color:${due.length > 0 ? "var(--danger)" : "var(--success)"}">${due.length}</div><div class="stat-lbl">今日待複習</div></div>
+      <div class="stat-cell"><div class="stat-num" style="color:${due.length>0?'var(--danger)':'var(--success)'}">${due.length}</div><div class="stat-lbl">今日待複習</div></div>
       <div class="stat-cell"><div class="stat-num" style="color:var(--success)">${mastered.length}</div><div class="stat-lbl">已掌握</div></div>
     </div>
-    <button class="btn btn-primary" onclick="startQuiz()">${due.length > 0 ? `開始複習　${due.length} 題待複習` : "今日已複習完畢 🎉"}</button>
-    <button class="btn btn-secondary" onclick="go('manage')">題庫管理</button>
-    <div class="card">
-      <div class="section-title">分類統計</div>
-      ${catStats || '<div class="muted">題庫為空</div>'}
-    </div>
+    <button class="btn btn-primary" onclick="startQuiz()">${due.length>0?`開始複習　${due.length} 題待複習`:'今日已複習完畢 🎉'}</button>
+    <button class="btn btn-secondary" onclick="showScreen('manage');renderManage()">題庫管理</button>
+    <div class="card"><div class="section-title">分類統計</div>${catStats||'<div class="muted">題庫為空</div>'}</div>
     <div class="muted" style="text-align:center;font-size:11px;padding-top:4px">SM-2 間隔重複・答對間隔加倍，答錯明日重試</div>
   `;
 }
 
-// ══════════════════════════════════════════════
-//  QUIZ
-// ══════════════════════════════════════════════
+// ── QUIZ ──
 function startQuiz() {
-  const now = Date.now();
-  const due = cards.filter(c => c.nextReview <= now);
-  if (!due.length) { alert("今日沒有待複習題目！"); return; }
-  quizQueue = [...due].sort(() => Math.random() - 0.5);
-  quizIdx = 0;
-  go("quiz");
-  renderQuiz();
+  const due=cards.filter(c=>c.nextReview<=Date.now());
+  if (!due.length){alert('今日沒有待複習題目！');return;}
+  quizQueue=[...due].sort(()=>Math.random()-.5); quizIdx=0;
+  showScreen('quiz'); renderQuiz();
 }
-
-function exitQuiz() { go("home"); }
-
+function exitQuiz(){showScreen('home');renderHome();}
 function renderQuiz() {
-  quizPhase = "draw";
-  const card = quizQueue[quizIdx];
-  const pct = Math.round((quizIdx / quizQueue.length) * 100);
-  document.getElementById("quiz-cat").textContent = card.category;
-  document.getElementById("quiz-progress").textContent = `${quizIdx + 1} / ${quizQueue.length}`;
-  document.getElementById("quiz-pct").textContent = pct + "%";
-  document.getElementById("quiz-prog-bar").style.width = pct + "%";
-
-  document.getElementById("quiz-body").innerHTML = `
+  const card=quizQueue[quizIdx], pct=Math.round((quizIdx/quizQueue.length)*100);
+  document.getElementById('quiz-cat').textContent=card.category;
+  document.getElementById('quiz-progress').textContent=`${quizIdx+1} / ${quizQueue.length}`;
+  document.getElementById('quiz-pct').textContent=pct+'%';
+  document.getElementById('quiz-prog-bar').style.width=pct+'%';
+  document.getElementById('quiz-body').innerHTML=`
     <div class="card" style="margin-bottom:10px">
       <div class="muted" style="margin-bottom:6px">題目</div>
-      <div style="font-size:15px;line-height:1.7">${card.question}</div>
+      <div class="math-render" style="font-size:15px;line-height:1.8">${renderMath(card.question)}</div>
     </div>
     <div class="card">
-      <div class="canvas-toolbar">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
         <span class="muted" style="font-size:12px;font-weight:700">手寫作答</span>
         <div style="flex:1"></div>
-        ${[2,3,5].map(ps=>`<button class="pen-btn${penSize===ps?" active":""}" onclick="setPen(${ps})" title="筆跡大小 ${ps}"><div style="width:${ps*2}px;height:${ps*2}px;border-radius:50%;background:#1a1a1a"></div></button>`).join("")}
+        ${[2,3,5].map(ps=>`<button class="pen-btn${penSize===ps?' active':''}" onclick="setPen(${ps})"><div style="width:${ps*2}px;height:${ps*2}px;border-radius:50%;background:#1a1a1a"></div></button>`).join('')}
         <button class="btn-sm danger" onclick="clearCanvas()">清除</button>
       </div>
-      <canvas id="draw-canvas" width="500" height="260" style="border:1px solid var(--border);border-radius:var(--radius-sm);height:220px"></canvas>
+      <canvas id="draw-canvas" width="500" height="260" style="border:1px solid var(--border);border-radius:var(--radius-sm);height:220px;display:block;width:100%"></canvas>
     </div>
     <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">提交答案，AI 批改</button>
   `;
   initCanvas();
 }
-
-// ── Canvas ──
 function initCanvas() {
-  const canvas = document.getElementById("draw-canvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  canvas.addEventListener("mousedown", onDown);
-  canvas.addEventListener("mousemove", onMove);
-  canvas.addEventListener("mouseup", onUp);
-  canvas.addEventListener("mouseleave", onUp);
-  canvas.addEventListener("touchstart", onDown, { passive: false });
-  canvas.addEventListener("touchmove", onMove, { passive: false });
-  canvas.addEventListener("touchend", onUp);
+  const c=document.getElementById('draw-canvas'); if(!c) return;
+  const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
+  c.addEventListener('mousedown',onDown); c.addEventListener('mousemove',onMove);
+  c.addEventListener('mouseup',onUp); c.addEventListener('mouseleave',onUp);
+  c.addEventListener('touchstart',onDown,{passive:false}); c.addEventListener('touchmove',onMove,{passive:false}); c.addEventListener('touchend',onUp);
 }
-
 function getXY(e) {
-  const canvas = document.getElementById("draw-canvas");
-  const r = canvas.getBoundingClientRect();
-  const sx = canvas.width / r.width, sy = canvas.height / r.height;
-  const src = e.touches ? e.touches[0] : e;
-  return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+  const c=document.getElementById('draw-canvas'), r=c.getBoundingClientRect();
+  const sx=c.width/r.width, sy=c.height/r.height, src=e.touches?e.touches[0]:e;
+  return {x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy};
 }
+function onDown(e){e.preventDefault();isDrawing=true;lastPos=getXY(e);}
+function onMove(e){
+  e.preventDefault(); if(!isDrawing) return;
+  const c=document.getElementById('draw-canvas'), ctx=c.getContext('2d'), pos=getXY(e);
+  ctx.beginPath(); ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=penSize; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.moveTo(lastPos.x,lastPos.y); ctx.lineTo(pos.x,pos.y); ctx.stroke(); lastPos=pos;
+}
+function onUp(){isDrawing=false;}
+function clearCanvas(){const c=document.getElementById('draw-canvas');if(!c)return;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function setPen(s){penSize=s;document.querySelectorAll('.pen-btn').forEach((b,i)=>b.classList.toggle('active',[2,3,5][i]===s));}
 
-function onDown(e) { e.preventDefault(); isDrawing = true; lastPos = getXY(e); }
-function onMove(e) {
-  e.preventDefault();
-  if (!isDrawing) return;
-  const canvas = document.getElementById("draw-canvas");
-  const ctx = canvas.getContext("2d");
-  const pos = getXY(e);
-  ctx.beginPath(); ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = penSize; ctx.lineCap = "round"; ctx.lineJoin = "round";
-  ctx.moveTo(lastPos.x, lastPos.y); ctx.lineTo(pos.x, pos.y); ctx.stroke();
-  lastPos = pos;
-}
-function onUp() { isDrawing = false; }
-function clearCanvas() {
-  const canvas = document.getElementById("draw-canvas");
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-function setPen(size) {
-  penSize = size;
-  document.querySelectorAll(".pen-btn").forEach((btn, i) => {
-    btn.classList.toggle("active", [2,3,5][i] === size);
-  });
-}
-
-// ── Submit ──
 async function submitAnswer() {
-  const btn = document.getElementById("submit-btn");
-  if (btn) btn.disabled = true;
-  quizPhase = "grading";
-
-  const canvas = document.getElementById("draw-canvas");
-  const imgData = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
-  const card = quizQueue[quizIdx];
-  const apiKey = getApiKey();
-
+  const btn=document.getElementById('submit-btn');
+  if(btn){btn.disabled=true;btn.textContent='AI 批改中…';}
+  const card=quizQueue[quizIdx];
+  const imgData=document.getElementById('draw-canvas').toDataURL('image/jpeg',0.85).split(',')[1];
   let result;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-opus-4-5",
-        max_tokens: 300,
-        system: `你是資料結構考試批改老師。根據題目和標準答案，判斷圖片中學生的手寫答案是否正確（大意正確即可，不要求完全一致）。
-只回傳 JSON，格式：{"correct": true/false, "feedback": "一句說明（繁體中文，30字內）"}
-不可有任何其他文字或 markdown。`,
-        messages: [{
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: imgData } },
-            { type: "text", text: `題目：${card.question}\n\n標準答案：${card.answer}` }
-          ]
-        }]
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-opus-4-5', max_tokens:300,
+        system:`你是資料結構考試批改老師。根據題目和標準答案，判斷圖片中學生手寫答案是否正確（大意正確即可）。只回傳 JSON：{"correct": true/false, "feedback": "一句說明（繁體中文，30字內）"}`,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}},
+          {type:'text',text:`題目：${card.question}\n\n標準答案：${card.answer}`}
+        ]}]
       })
     });
-    const data = await res.json();
-    const raw = (data.content?.[0]?.text || "").replace(/```json|```/g, "").trim();
-    result = JSON.parse(raw);
-  } catch (e) {
-    result = { correct: null, feedback: "批改失敗，請確認 API Key 是否正確" };
+    const data=await res.json();
+    result=JSON.parse((data.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
+  } catch(e) { result={correct:null,feedback:'批改失敗，請確認 API Key'}; }
+
+  if(result.correct!==null){
+    const updated=applySmTwo(card,result.correct);
+    cards=cards.map(c=>c.id===card.id?updated:c);
+    try{await saveToDrive();}catch(e){}
   }
-
-  // Update card with SM-2
-  if (result.correct !== null) {
-    const updated = applySmTwo(card, result.correct);
-    cards = cards.map(c => c.id === card.id ? updated : c);
-    try { await saveToDrive(); } catch (e) { console.warn("Drive 儲存失敗", e); }
-  }
-
-  quizPhase = "result";
-  const nextLabel = quizIdx + 1 >= quizQueue.length ? "完成今日複習 ✓" : "下一題 →";
-  const intervalText = result.correct
-    ? (quizQueue[quizIdx].interval <= 1 ? "明天" : quizQueue[quizIdx].interval <= 6 ? "6 天後" : `${quizQueue[quizIdx].interval} 天後`)
-    : "明天重試";
-
-  document.getElementById("quiz-body").innerHTML += `
-    <div class="result-card ${result.correct ? "correct" : result.correct === false ? "wrong" : ""}">
-      <div class="result-icon">${result.correct ? "✓" : result.correct === false ? "✗" : "?"}</div>
-      <div class="result-verdict" style="color:${result.correct ? "var(--success)" : "var(--danger)"}">
-        ${result.correct ? "答對了！" : result.correct === false ? "答錯了" : "批改失敗"}
+  const intv=result.correct?(card.interval<=1?'明天':card.interval<=6?'6 天後':`${card.interval} 天後`):'明天重試';
+  const nextLbl=quizIdx+1>=quizQueue.length?'完成今日複習 ✓':'下一題 →';
+  document.getElementById('quiz-body').insertAdjacentHTML('beforeend',`
+    <div class="result-card ${result.correct?'correct':result.correct===false?'wrong':''}">
+      <div style="font-size:28px;margin-bottom:6px">${result.correct?'✓':result.correct===false?'✗':'?'}</div>
+      <div style="font-size:16px;font-weight:700;color:${result.correct?'var(--success)':'var(--danger)'}">
+        ${result.correct?'答對了！':result.correct===false?'答錯了':'批改失敗'}
       </div>
-      <div class="result-feedback">${result.feedback}</div>
+      <div style="font-size:13px;margin-top:4px">${result.feedback}</div>
       <div class="divider"></div>
-      <div class="muted" style="font-size:11px;margin-bottom:4px">標準答案</div>
-      <div style="font-size:13px;line-height:1.65">${card.answer}</div>
-      <div class="muted" style="margin-top:10px;text-align:right;font-size:11px">下次複習：${intervalText}</div>
+      <div class="muted" style="font-size:11px;margin-bottom:6px">標準答案</div>
+      <div class="math-render" style="font-size:13px;line-height:1.8">${renderMath(card.answer)}</div>
+      <div class="muted" style="margin-top:10px;text-align:right;font-size:11px">下次複習：${intv}</div>
     </div>
-    <button class="btn btn-primary" onclick="nextCard()">${nextLabel}</button>
-  `;
-  document.getElementById("quiz-body").scrollTo(0, 999999);
-  window.scrollTo(0, document.body.scrollHeight);
+    <button class="btn btn-primary" onclick="nextCard()">${nextLbl}</button>
+  `);
+  window.scrollTo(0,document.body.scrollHeight);
+}
+function nextCard(){
+  if(quizIdx+1>=quizQueue.length){showScreen('home');renderHome();return;}
+  quizIdx++; renderQuiz(); window.scrollTo(0,0);
 }
 
-function nextCard() {
-  if (quizIdx + 1 >= quizQueue.length) { go("home"); return; }
-  quizIdx++;
-  renderQuiz();
-  window.scrollTo(0,0);
-}
-
-// ══════════════════════════════════════════════
-//  MANAGE
-// ══════════════════════════════════════════════
+// ── MANAGE ──
 function renderManage() {
-  const q = (document.getElementById("search-input")?.value || "").toLowerCase();
-  const filtered = cards.filter(c =>
-    !q || c.question.toLowerCase().includes(q) || c.category.toLowerCase().includes(q)
-  );
-  const now = Date.now();
-
-  document.getElementById("manage-body").innerHTML = filtered.length === 0
-    ? `<div class="muted" style="text-align:center;padding:40px 0">${q ? "無符合結果" : "題庫為空，請先新增題目"}</div>`
-    : filtered.map(c => `
+  const q=(document.getElementById('search-input')?.value||'').toLowerCase();
+  const filtered=cards.filter(c=>!q||c.question.toLowerCase().includes(q)||c.category.toLowerCase().includes(q));
+  const now=Date.now();
+  document.getElementById('manage-body').innerHTML=filtered.length===0
+    ?`<div class="muted" style="text-align:center;padding:40px 0">${q?'無符合結果':'題庫為空，請先新增題目'}</div>`
+    :filtered.map(c=>`
       <div class="card-item">
-        <div class="card-item-row">
+        <div style="display:flex;align-items:flex-start;gap:10px">
           <div style="flex:1;min-width:0">
             ${badgeHtml(c.category)}
-            <div style="font-size:13px;margin-top:6px;line-height:1.55">${c.question}</div>
-            <div class="muted" style="margin-top:5px">複習 ${c.repetitions} 次・${c.nextReview <= now ? "今日待複習" : Math.ceil((c.nextReview - now) / 86400000) + " 天後"}</div>
+            <div style="font-size:13px;margin-top:6px;line-height:1.55">${c.question.replace(/\$([^$\n]+)\$/g,(_,e)=>{try{return katex.renderToString(e,{throwOnError:false});}catch(ex){return '$'+e+'$';}})}</div>
+            <div class="muted" style="margin-top:5px">複習 ${c.repetitions} 次・${c.nextReview<=now?'今日待複習':Math.ceil((c.nextReview-now)/86400000)+' 天後'}</div>
           </div>
-          <div class="card-item-actions">
+          <div style="display:flex;gap:6px;flex-shrink:0">
             <button class="btn-sm" onclick="openEdit('${c.id}')">編輯</button>
             <button class="btn-sm danger" onclick="deleteCard('${c.id}')">刪除</button>
           </div>
         </div>
-      </div>`).join("");
+      </div>`).join('');
 }
-
+function openAddNew() {
+  editId=null;
+  document.getElementById('add-title').textContent='新增題目';
+  document.getElementById('f-category').value='Tree';
+  document.getElementById('f-question').value='';
+  document.getElementById('f-answer').value='';
+  document.getElementById('preview-q').innerHTML='';
+  document.getElementById('preview-a').innerHTML='';
+  buildToolbar('toolbar-q','f-question');
+  buildToolbar('toolbar-a','f-answer');
+  showScreen('add');
+}
 function openEdit(id) {
-  const c = cards.find(x => x.id === id);
-  if (!c) return;
-  editId = id;
-  document.getElementById("add-title").textContent = "編輯題目";
-  document.getElementById("f-category").value = c.category;
-  document.getElementById("f-question").value = c.question;
-  document.getElementById("f-answer").value = c.answer;
-  go("add");
+  const c=cards.find(x=>x.id===id); if(!c) return;
+  editId=id;
+  document.getElementById('add-title').textContent='編輯題目';
+  document.getElementById('f-category').value=c.category;
+  document.getElementById('f-question').value=c.question;
+  document.getElementById('f-answer').value=c.answer;
+  buildToolbar('toolbar-q','f-question');
+  buildToolbar('toolbar-a','f-answer');
+  updatePreview('q'); updatePreview('a');
+  showScreen('add');
 }
-
-function go_add_new() {
-  editId = null;
-  _go("add");
-  setTimeout(() => {
-    document.getElementById("add-title").textContent = "新增題目";
-    document.getElementById("f-category").value = "Tree";
-    document.getElementById("f-question").value = "";
-    document.getElementById("f-answer").value = "";
-  }, 0);
-}
-
 async function saveCard() {
-  const cat = document.getElementById("f-category").value;
-  const q = document.getElementById("f-question").value.trim();
-  const a = document.getElementById("f-answer").value.trim();
-  if (!q || !a) { alert("請填寫題目和答案"); return; }
-  if (editId) {
-    cards = cards.map(c => c.id === editId ? { ...c, category: cat, question: q, answer: a } : c);
-  } else {
-    cards.push(createCard(q, a, cat));
-  }
-  loading(true, "儲存中…");
-  try { await saveToDrive(); } catch (e) { alert("儲存到 Drive 失敗，請重試"); }
-  loading(false);
-  editId = null;
-  go("manage");
+  const cat=document.getElementById('f-category').value;
+  const q=document.getElementById('f-question').value.trim();
+  const a=document.getElementById('f-answer').value.trim();
+  if(!q||!a){alert('請填寫題目和答案');return;}
+  if(editId) cards=cards.map(c=>c.id===editId?{...c,category:cat,question:q,answer:a}:c);
+  else cards.push(createCard(q,a,cat));
+  loading(true,'儲存中…');
+  try{await saveToDrive();}catch(e){alert('儲存失敗，請重試');}
+  loading(false); editId=null;
+  showScreen('manage'); renderManage();
 }
-
 async function deleteCard(id) {
-  if (!confirm("確定刪除此題目？")) return;
-  cards = cards.filter(c => c.id !== id);
-  loading(true, "儲存中…");
-  try { await saveToDrive(); } catch(e) { alert("刪除失敗，請重試"); }
-  loading(false);
-  renderManage();
+  if(!confirm('確定刪除此題目？')) return;
+  cards=cards.filter(c=>c.id!==id);
+  loading(true,'刪除中…');
+  try{await saveToDrive();}catch(e){}
+  loading(false); renderManage();
 }
 
-// Override go('add') to reset form
-const _go = go;
-window.go = function(screen) {
-  if (screen === "add" && !editId) go_add_new(); else _go(screen);
-};
-
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-window.addEventListener("load", () => {
+// ── INIT ──
+window.addEventListener('load', () => {
   loading(false);
-  if (!getApiKey()) {
-    go("setup");
-  } else {
-    // Wait for Google GSI to load then init
-    const waitGSI = setInterval(() => {
-      if (window.google?.accounts?.oauth2) {
-        clearInterval(waitGSI);
-        initGoogleAuth();
-        go("login");
-      }
-    }, 100);
-  }
+  if (!getApiKey()) { showScreen('setup'); return; }
+  const wait = setInterval(() => {
+    if (window.google?.accounts?.oauth2) {
+      clearInterval(wait);
+      initGoogleAuth();
+      showScreen('login');
+    }
+  }, 100);
 });
 </script>
 </body>
