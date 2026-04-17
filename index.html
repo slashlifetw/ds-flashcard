@@ -8,66 +8,79 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #f8f7f4; --surface: #ffffff; --border: #e5e2d9;
-  --text: #1a1a1a; --muted: #888; --hint: #bbb;
-  --accent: #4f46e5; --accent-light: #ede9fe; --accent-text: #3730a3;
-  --success: #16a34a; --success-bg: #f0fdf4; --success-border: #bbf7d0;
-  --danger: #dc2626; --danger-bg: #fef2f2; --danger-border: #fecaca;
-  --warn-bg: #fffbeb; --warn-border: #fde68a; --warn-text: #92400e;
-  --radius: 10px; --radius-sm: 6px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f7f4;--surface:#fff;--border:#e5e2d9;
+  --text:#1a1a1a;--muted:#888;--hint:#bbb;
+  --accent:#4f46e5;--accent-light:#ede9fe;--accent-text:#3730a3;
+  --success:#16a34a;--success-bg:#f0fdf4;--success-border:#bbf7d0;
+  --danger:#dc2626;--danger-bg:#fef2f2;--danger-border:#fecaca;
+  --warn-bg:#fffbeb;--warn-border:#fde68a;--warn-text:#92400e;
+  --radius:10px;--radius-sm:6px
 }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
-.screen { display: none; max-width: 540px; margin: 0 auto; padding: 16px 16px 60px; }
-.screen.active { display: block; }
-.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; position: sticky; top: 0; z-index: 50; max-width: 540px; margin: 0 auto; }
-.topbar-row { display: flex; align-items: center; gap: 10px; }
-.back-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: var(--radius-sm); padding: 5px 11px; font-size: 12px; cursor: pointer; -webkit-appearance: none; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
-.btn { display: block; width: 100%; padding: 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 8px; border: none; text-align: center; -webkit-appearance: none; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:disabled { background: var(--hint); cursor: not-allowed; }
-.btn-secondary { background: none; border: 1px solid var(--border); color: var(--text); }
-.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; -webkit-appearance: none; }
-.btn-sm.danger { color: var(--danger); border-color: var(--danger-border); }
-.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: 4px; }
-input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--surface); color: var(--text); margin-bottom: 12px; -webkit-appearance: none; border-radius: var(--radius-sm); }
-textarea { resize: vertical; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
-.badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-.alert { border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; line-height: 1.6; margin: 10px 0; }
-.alert-warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-text); }
-.alert-info { background: var(--accent-light); border: 1px solid #c7d2fe; color: var(--accent-text); }
-.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
-.stat-cell { background: var(--surface); padding: 14px 10px; text-align: center; }
-.stat-num { font-size: 24px; font-weight: 700; }
-.stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.prog-wrap { background: var(--border); border-radius: 10px; height: 4px; margin-top: 8px; }
-.prog-bar { background: var(--accent); height: 4px; border-radius: 10px; transition: width .3s; }
-#draw-canvas { touch-action: none; cursor: crosshair; display: block; width: 100%; }
-.pen-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-appearance: none; }
-.pen-btn.active { border-color: var(--accent); background: var(--accent-light); }
-.result-card { border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
-.result-card.correct { background: var(--success-bg); border: 1px solid var(--success-border); }
-.result-card.wrong { background: var(--danger-bg); border: 1px solid var(--danger-border); }
-.card-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; }
-/* Math toolbar */
-.math-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; padding: 8px; background: var(--bg); border-radius: var(--radius-sm); border: 1px solid var(--border); }
-.math-btn { padding: 4px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); cursor: pointer; color: var(--accent-text); -webkit-appearance: none; white-space: nowrap; font-family: 'Courier New', monospace; }
-.math-btn:active { background: var(--accent-light); }
-.math-preview { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; min-height: 36px; margin-bottom: 12px; font-size: 13px; line-height: 1.9; }
-.math-hint { font-size: 11px; color: var(--muted); margin-top: -8px; margin-bottom: 6px; }
-.math-render .katex { font-size: 1em; }
-#loading { position: fixed; inset: 0; background: rgba(255,255,255,.92); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; gap: 12px; font-size: 13px; color: var(--muted); }
-#loading.hidden { display: none; }
-.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.muted { font-size: 12px; color: var(--muted); }
-.section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
-h2 { font-size: 16px; font-weight: 700; }
-.divider { height: 1px; background: var(--border); margin: 14px 0; }
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.screen{display:none;max-width:540px;margin:0 auto;padding:16px 16px 60px}
+.screen.active{display:block}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;max-width:540px;margin:0 auto}
+.topbar-row{display:flex;align-items:center;gap:10px}
+.back-btn,.btn-sm{background:none;border:1px solid var(--border);color:var(--muted);border-radius:var(--radius-sm);padding:5px 11px;font-size:12px;cursor:pointer;-webkit-appearance:none}
+.btn-sm.danger{color:var(--danger);border-color:var(--danger-border)}
+.btn-sm.accent{color:var(--accent);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.btn{display:block;width:100%;padding:12px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;border:none;text-align:center;-webkit-appearance:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:disabled{background:var(--hint);cursor:not-allowed}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text)}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);font-size:14px;font-weight:600;cursor:pointer}
+label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;background:var(--surface);color:var(--text);margin-bottom:12px;-webkit-appearance:none}
+textarea{resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.alert{border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;line-height:1.6;margin:10px 0}
+.alert-info{background:var(--accent-light);border:1px solid #c7d2fe;color:var(--accent-text)}
+.alert-warn{background:var(--warn-bg);border:1px solid var(--warn-border);color:var(--warn-text)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.stat-cell{background:var(--surface);padding:14px 10px;text-align:center}
+.stat-num{font-size:24px;font-weight:700}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.prog-wrap{background:var(--border);border-radius:10px;height:4px;margin-top:8px}
+.prog-bar{background:var(--accent);height:4px;border-radius:10px;transition:width .3s}
+/* answer mode toggle */
+.mode-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px}
+.mode-btn{flex:1;padding:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;-webkit-appearance:none;background:none;color:var(--muted);transition:all .15s}
+.mode-btn.active{background:var(--accent);color:#fff}
+/* canvas */
+#draw-canvas{touch-action:none;cursor:crosshair;display:block;width:100%}
+.pen-btn{width:28px;height:28px;border-radius:50%;border:2px solid transparent;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none}
+.pen-btn.active{border-color:var(--accent);background:var(--accent-light)}
+/* typing answer */
+.type-area{width:100%;min-height:180px;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;resize:vertical;background:var(--surface);color:var(--text)}
+.type-area:focus{outline:none;border-color:var(--accent)}
+/* result */
+.result-card{border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.result-card.correct{background:var(--success-bg);border:1px solid var(--success-border)}
+.result-card.wrong{background:var(--danger-bg);border:1px solid var(--danger-border)}
+.card-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px}
+/* math */
+.math-toolbar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;padding:8px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.math-btn{padding:4px 8px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer;color:var(--accent-text);-webkit-appearance:none;white-space:nowrap;font-family:'Courier New',monospace}
+.math-btn:active{background:var(--accent-light)}
+.math-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;min-height:36px;margin-bottom:12px;font-size:13px;line-height:1.9}
+.math-hint{font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:6px}
+.math-render .katex{font-size:1em}
+/* category manager */
+.cat-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.cat-item:last-child{border-bottom:none}
+/* loading */
+#loading{position:fixed;inset:0;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:12px;font-size:13px;color:var(--muted)}
+#loading.hidden{display:none}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.muted{font-size:12px;color:var(--muted)}
+.section-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+h2{font-size:16px;font-weight:700}
+.divider{height:1px;background:var(--border);margin:14px 0}
 </style>
 </head>
 <body>
@@ -146,11 +159,38 @@ h2 { font-size: 16px; font-weight: 700; }
         <button class="back-btn" onclick="showScreen('home');renderHome()">← 返回</button>
         <h2>題庫管理</h2>
       </div>
-      <button class="btn btn-primary" style="width:auto;padding:6px 14px;margin:0;font-size:13px" onclick="openAddNew()">＋ 新增</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn-sm accent" onclick="showScreen('cats')">分類</button>
+        <button class="btn btn-primary" style="width:auto;padding:6px 14px;margin:0;font-size:13px" onclick="openAddNew()">＋ 新增</button>
+      </div>
     </div>
     <input type="search" id="search-input" placeholder="搜尋題目或分類…" style="margin-top:10px;margin-bottom:0" oninput="renderManage()">
   </div>
   <div style="padding:12px 16px 60px" id="manage-body"></div>
+</div>
+
+<!-- Category Manager -->
+<div id="screen-cats" class="screen" style="padding:0">
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="back-btn" onclick="showScreen('manage');renderManage()">← 返回</button>
+      <h2>分類管理</h2>
+    </div>
+  </div>
+  <div style="padding:14px 16px 60px">
+    <div class="card">
+      <div class="section-title">新增分類</div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="new-cat-name" placeholder="輸入新分類名稱…" style="margin-bottom:0;flex:1">
+        <button class="btn btn-primary" style="width:auto;margin:0;padding:0 16px" onclick="addCategory()">新增</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">目前分類</div>
+      <div id="cat-list"></div>
+    </div>
+    <div class="alert alert-warn">刪除分類不會刪除該分類的題目，題目將自動歸入「其他」</div>
+  </div>
 </div>
 
 <!-- Add/Edit -->
@@ -164,23 +204,17 @@ h2 { font-size: 16px; font-weight: 700; }
   <div style="padding:14px 16px 60px">
     <div class="card">
       <label>分類</label>
-      <select id="f-category">
-        <option>Tree</option><option>Graph</option><option>Sorting</option>
-        <option>Hashing</option><option>Heap</option><option>Dynamic Programming</option><option>其他</option>
-      </select>
-
+      <select id="f-category"></select>
       <label>題目</label>
       <div class="math-toolbar" id="toolbar-q"></div>
-      <textarea id="f-question" rows="4" placeholder="輸入題目… 數學式用 $…$ 包住，例如 $O(n^2)$、$\log n$" oninput="updatePreview('q')"></textarea>
-      <div class="math-hint">▸ 預覽（數學式會自動渲染）</div>
+      <textarea id="f-question" rows="4" placeholder="輸入題目… 數學式用 $…$ 包住，例如 $O(n^2)$" oninput="updatePreview('q')"></textarea>
+      <div class="math-hint">▸ 預覽</div>
       <div class="math-preview math-render" id="preview-q"></div>
-
       <label>標準答案</label>
       <div class="math-toolbar" id="toolbar-a"></div>
       <textarea id="f-answer" rows="6" placeholder="輸入標準答案…" oninput="updatePreview('a')"></textarea>
       <div class="math-hint">▸ 預覽</div>
       <div class="math-preview math-render" id="preview-a"></div>
-
       <button class="btn btn-primary" onclick="saveCard()">儲存</button>
       <button class="btn btn-secondary" onclick="showScreen('manage');renderManage()">取消</button>
     </div>
@@ -188,13 +222,13 @@ h2 { font-size: 16px; font-weight: 700; }
 </div>
 
 <script>
-const CLIENT_ID = "16377008216-n7srio84pbbfkm6q8fdmq3ss3po1pbum.apps.googleusercontent.com";
-const SCOPE = "https://www.googleapis.com/auth/drive.file";
-const FILE_NAME = "ds_flashcards.json";
-const CATS = ["Tree","Graph","Sorting","Hashing","Heap","Dynamic Programming","其他"];
-const CAT_COLOR = { Tree:"#ede9fe:#5b21b6", Graph:"#d1fae5:#065f46", Sorting:"#fef9c3:#854d0e", Hashing:"#fee2e2:#991b1b", Heap:"#fce7f3:#9d174d", "Dynamic Programming":"#dbeafe:#1e3a8a", "其他":"#f1f5f9:#475569" };
+const CLIENT_ID="16377008216-n7srio84pbbfkm6q8fdmq3ss3po1pbum.apps.googleusercontent.com";
+const SCOPE="https://www.googleapis.com/auth/drive.file";
+const FILE_NAME="ds_flashcards.json";
+const DEFAULT_CATS=["Tree","Graph","Sorting","Hashing","Heap","Dynamic Programming","其他"];
+const CAT_COLORS=["#ede9fe:#5b21b6","#d1fae5:#065f46","#fef9c3:#854d0e","#fee2e2:#991b1b","#fce7f3:#9d174d","#dbeafe:#1e3a8a","#f1f5f9:#475569","#fef3c7:#92400e","#d1fae5:#065f46","#fae8ff:#7e22ce"];
 
-const MATH_SYMS = [
+const MATH_SYMS=[
   {l:"O(n)",v:"$O(n)$"},{l:"O(n²)",v:"$O(n^2)$"},{l:"O(n log n)",v:"$O(n \\log n)$"},
   {l:"O(log n)",v:"$O(\\log n)$"},{l:"Ω(n)",v:"$\\Omega(n)$"},{l:"Θ(n)",v:"$\\Theta(n)$"},
   {l:"log",v:"$\\log$"},{l:"lg",v:"$\\lg$"},{l:"√n",v:"$\\sqrt{n}$"},
@@ -204,164 +238,190 @@ const MATH_SYMS = [
   {l:"n!",v:"$n!$"},{l:"→",v:"$\\rightarrow$"},{l:"∀",v:"$\\forall$"},
 ];
 
-let accessToken=null, driveFileId=null, cards=[], editId=null;
-let quizQueue=[], quizIdx=0, penSize=3, isDrawing=false, lastPos=null;
+// STATE
+let accessToken=null,driveFileId=null,cards=[],categories=[...DEFAULT_CATS];
+let editId=null,quizQueue=[],quizIdx=0,penSize=3,isDrawing=false,lastPos=null;
+let answerMode='draw'; // 'draw' | 'type'
 
-// ── SCREEN (fixed for iOS) ──
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.style.display = 'none';
-    s.classList.remove('active');
-  });
-  const t = document.getElementById('screen-' + name);
-  if (!t) return;
-  t.style.display = 'block';
-  t.classList.add('active');
-  window.scrollTo(0, 0);
+// SCREEN
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>{s.style.display='none';s.classList.remove('active')});
+  const t=document.getElementById('screen-'+name);
+  if(!t)return; t.style.display='block'; t.classList.add('active'); window.scrollTo(0,0);
+}
+function loading(show,text){
+  document.getElementById('loading').classList.toggle('hidden',!show);
+  if(text) document.getElementById('loading-text').textContent=text;
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+
+// CATEGORY COLOR
+function catStyle(cat){
+  const idx=categories.indexOf(cat);
+  const pair=CAT_COLORS[idx%CAT_COLORS.length]||CAT_COLORS[CAT_COLORS.length-1];
+  const[bg,fg]=pair.split(':');
+  return{bg,fg};
+}
+function badgeHtml(cat){
+  const{bg,fg}=catStyle(cat);
+  return`<span class="badge" style="background:${bg};color:${fg}">${cat}</span>`;
 }
 
-function loading(show, text) {
-  document.getElementById('loading').classList.toggle('hidden', !show);
-  if (text) document.getElementById('loading-text').textContent = text;
+// MATH
+function renderMath(text){
+  if(!window.katex||!text)return text||'';
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\$([^$\n]+)\$/g,(_,e)=>{try{return katex.renderToString(e,{throwOnError:false})}catch(ex){return'$'+e+'$'}});
 }
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-function badgeHtml(cat) {
-  const [bg,fg] = (CAT_COLOR[cat]||CAT_COLOR["其他"]).split(":");
-  return `<span class="badge" style="background:${bg};color:${fg}">${cat}</span>`;
+function updatePreview(f){
+  const ta=document.getElementById(f==='q'?'f-question':'f-answer');
+  const pv=document.getElementById('preview-'+f);
+  if(ta&&pv)pv.innerHTML=renderMath(ta.value);
 }
-
-// ── MATH ──
-function renderMath(text) {
-  if (!window.katex || !text) return text || "";
-  const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return escaped.replace(/\$([^$\n]+)\$/g, (_,expr) => {
-    try { return katex.renderToString(expr, {throwOnError:false}); }
-    catch(e) { return '$'+expr+'$'; }
-  });
-}
-function updatePreview(f) {
-  const ta = document.getElementById(f==='q'?'f-question':'f-answer');
-  const pv = document.getElementById('preview-'+f);
-  if (ta && pv) pv.innerHTML = renderMath(ta.value);
-}
-function buildToolbar(tid, targetId) {
-  const tb = document.getElementById(tid);
-  if (!tb) return;
-  tb.innerHTML = '<span style="font-size:11px;color:var(--muted);align-self:center;flex-shrink:0">插入：</span>';
-  MATH_SYMS.forEach(s => {
-    const b = document.createElement('button');
-    b.className = 'math-btn'; b.textContent = s.l; b.type = 'button';
-    b.addEventListener('click', () => insertAt(document.getElementById(targetId), s.v));
+function buildToolbar(tid,targetId){
+  const tb=document.getElementById(tid); if(!tb)return;
+  tb.innerHTML='<span style="font-size:11px;color:var(--muted);align-self:center;flex-shrink:0;margin-right:2px">插入：</span>';
+  MATH_SYMS.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='math-btn';b.textContent=s.l;b.type='button';
+    b.addEventListener('click',()=>insertAt(document.getElementById(targetId),s.v));
     tb.appendChild(b);
   });
 }
-function insertAt(ta, text) {
-  if (!ta) return;
-  ta.focus();
-  const st=ta.selectionStart, en=ta.selectionEnd;
-  ta.value = ta.value.slice(0,st) + text + ta.value.slice(en);
-  ta.selectionStart = ta.selectionEnd = st + text.length;
+function insertAt(ta,text){
+  if(!ta)return; ta.focus();
+  const st=ta.selectionStart,en=ta.selectionEnd;
+  ta.value=ta.value.slice(0,st)+text+ta.value.slice(en);
+  ta.selectionStart=ta.selectionEnd=st+text.length;
   ta.dispatchEvent(new Event('input'));
 }
 
-// ── SETUP ──
-function getApiKey() { return localStorage.getItem('anthropic_key')||''; }
-function saveSetup() {
-  const k = document.getElementById('setup-key').value.trim();
-  if (!k.startsWith('sk-ant-')) { alert('格式不正確，應以 sk-ant- 開頭'); return; }
-  localStorage.setItem('anthropic_key', k);
-  showScreen('login');
+// SETUP
+function getApiKey(){return localStorage.getItem('anthropic_key')||''}
+function saveSetup(){
+  const k=document.getElementById('setup-key').value.trim();
+  if(!k.startsWith('sk-ant-')){alert('格式不正確，應以 sk-ant- 開頭');return}
+  localStorage.setItem('anthropic_key',k);showScreen('login');
 }
 
-// ── GOOGLE AUTH ──
+// GOOGLE AUTH
 let tokenClient;
-function initGoogleAuth() {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID, scope: SCOPE,
-    callback: async resp => {
-      if (resp.error) { alert('Google 登入失敗：'+resp.error); return; }
-      accessToken = resp.access_token;
+function initGoogleAuth(){
+  tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:CLIENT_ID,scope:SCOPE,
+    callback:async resp=>{
+      if(resp.error){alert('Google 登入失敗：'+resp.error);return}
+      accessToken=resp.access_token;
       loading(true,'讀取雲端資料…');
       await loadDriveData();
-      loading(false);
-      showScreen('home');
-      renderHome();
+      loading(false);showScreen('home');renderHome();
     }
   });
 }
-function signIn() { tokenClient.requestAccessToken(); }
-function signOut() {
-  if (accessToken) google.accounts.oauth2.revoke(accessToken, ()=>{});
-  accessToken=null; driveFileId=null; cards=[];
-  showScreen('login');
+function signIn(){tokenClient.requestAccessToken()}
+function signOut(){
+  if(accessToken)google.accounts.oauth2.revoke(accessToken,()=>{});
+  accessToken=null;driveFileId=null;cards=[];showScreen('login');
 }
 
-// ── DRIVE ──
-async function driveReq(url, opts={}) {
-  const r = await fetch(url, {...opts, headers:{"Authorization":"Bearer "+accessToken,...(opts.headers||{})}});
-  if (!r.ok) throw new Error("Drive "+r.status);
-  return r;
+// DRIVE
+async function driveReq(url,opts={}){
+  const r=await fetch(url,{...opts,headers:{"Authorization":"Bearer "+accessToken,...(opts.headers||{})}});
+  if(!r.ok)throw new Error("Drive "+r.status);return r;
 }
-async function loadDriveData() {
-  const r = await driveReq(`https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id)`);
-  const d = await r.json();
-  if (d.files?.length) {
-    driveFileId = d.files[0].id;
-    const f = await driveReq(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
-    const j = await f.json();
-    cards = j.cards || [];
-  } else { cards = getSampleCards(); await saveToDrive(); }
+async function loadDriveData(){
+  const r=await driveReq(`https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id)`);
+  const d=await r.json();
+  if(d.files?.length){
+    driveFileId=d.files[0].id;
+    const f=await driveReq(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
+    const j=await f.json();
+    cards=j.cards||[];
+    categories=j.categories||[...DEFAULT_CATS];
+  }else{cards=getSampleCards();categories=[...DEFAULT_CATS];await saveToDrive()}
 }
-async function saveToDrive() {
-  const blob = new Blob([JSON.stringify({version:2,lastSync:Date.now(),cards})],{type:'application/json'});
-  const form = new FormData();
-  if (driveFileId) {
-    form.append('metadata', new Blob([JSON.stringify({name:FILE_NAME})],{type:'application/json'}));
-    form.append('file', blob);
+async function saveToDrive(){
+  const blob=new Blob([JSON.stringify({version:3,lastSync:Date.now(),cards,categories})],{type:'application/json'});
+  const form=new FormData();
+  if(driveFileId){
+    form.append('metadata',new Blob([JSON.stringify({name:FILE_NAME})],{type:'application/json'}));
+    form.append('file',blob);
     await driveReq(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`,{method:'PATCH',body:form});
-  } else {
-    form.append('metadata', new Blob([JSON.stringify({name:FILE_NAME,mimeType:'application/json'})],{type:'application/json'}));
-    form.append('file', blob);
-    const res = await driveReq(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id`,{method:'POST',body:form});
-    driveFileId = (await res.json()).id;
+  }else{
+    form.append('metadata',new Blob([JSON.stringify({name:FILE_NAME,mimeType:'application/json'})],{type:'application/json'}));
+    form.append('file',blob);
+    const res=await driveReq(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id`,{method:'POST',body:form});
+    driveFileId=(await res.json()).id;
   }
 }
 
-// ── SM-2 ──
-function applySmTwo(card, correct) {
-  const c = {...card};
-  if (correct) {
-    if (c.repetitions===0) c.interval=1;
-    else if (c.repetitions===1) c.interval=6;
+// SM-2
+function applySmTwo(card,correct){
+  const c={...card};
+  if(correct){
+    if(c.repetitions===0)c.interval=1;
+    else if(c.repetitions===1)c.interval=6;
     else c.interval=Math.round(c.interval*c.easeFactor);
-    c.repetitions++; c.easeFactor=Math.max(1.3,parseFloat((c.easeFactor+0.1).toFixed(2)));
-  } else { c.repetitions=0; c.interval=1; c.easeFactor=Math.max(1.3,parseFloat((c.easeFactor-0.2).toFixed(2))); }
-  c.nextReview = Date.now()+c.interval*86400000;
-  return c;
+    c.repetitions++;c.easeFactor=Math.max(1.3,parseFloat((c.easeFactor+0.1).toFixed(2)));
+  }else{c.repetitions=0;c.interval=1;c.easeFactor=Math.max(1.3,parseFloat((c.easeFactor-0.2).toFixed(2)))}
+  c.nextReview=Date.now()+c.interval*86400000;return c;
 }
-function createCard(q,a,cat) { return {id:uid(),question:q,answer:a,category:cat,repetitions:0,interval:1,easeFactor:2.5,nextReview:Date.now(),createdAt:Date.now()}; }
-function getSampleCards() {
-  return [
-    {question:"請說明 AVL Tree 的平衡條件，並列舉四種旋轉情況（LL, RR, LR, RL）",answer:"每個節點左右子樹高度差（Balance Factor）絕對值 $\\leq 1$。LL→右旋、RR→左旋、LR→先左旋左子再右旋、RL→先右旋右子再左旋。",category:"Tree"},
-    {question:"分析 Quick Sort 的最佳、平均、最差時間複雜度，並說明最差情況何時發生",answer:"最佳 $O(n \\log n)$、平均 $O(n \\log n)$、最差 $O(n^2)$。最差情況：每次 pivot 選到最大或最小值（如已排序數列選第一個元素）。",category:"Sorting"},
-    {question:"什麼是 Hash Collision？請說明 Chaining 和 Open Addressing 兩種解決方式",answer:"不同 key 映射到相同 hash 值。Chaining：同 slot 用 linked list；Open Addressing：線性探測 / 二次探測 / 雙重雜湊找下一個空 slot。",category:"Hashing"},
+function createCard(q,a,cat){return{id:uid(),question:q,answer:a,category:cat,repetitions:0,interval:1,easeFactor:2.5,nextReview:Date.now(),createdAt:Date.now()}}
+function getSampleCards(){
+  return[
+    {question:"請說明 AVL Tree 的平衡條件，並列舉四種旋轉情況（LL, RR, LR, RL）",answer:"每個節點左右子樹高度差（BF）絕對值 $\\leq 1$。LL→右旋、RR→左旋、LR→先左旋左子再右旋、RL→先右旋右子再左旋。",category:"Tree"},
+    {question:"分析 Quick Sort 的最佳、平均、最差時間複雜度",answer:"最佳 $O(n \\log n)$、平均 $O(n \\log n)$、最差 $O(n^2)$。最差情況：每次 pivot 選到最大或最小值。",category:"Sorting"},
+    {question:"什麼是 Hash Collision？請說明兩種解決方式",answer:"不同 key 映射到相同 hash 值。Chaining：同 slot 用 linked list；Open Addressing：線性探測找下一個空 slot。",category:"Hashing"},
     {question:"請說明 Dijkstra 演算法的運作流程與時間複雜度",answer:"單源最短路徑。每次選未訪問中 dist 最小的節點更新鄰居。Min-heap：$O((V+E)\\log V)$；陣列：$O(V^2)$。",category:"Graph"},
     {question:"請說明 Heap Sort 的原理與時間複雜度，並說明為何不穩定",answer:"Build Max-Heap $O(n)$，反覆取出最大值 heapify $O(\\log n)$，共 $n$ 次，總 $O(n \\log n)$。不穩定因 heapify 改變相同鍵值相對順序。",category:"Heap"},
-    {question:"解釋動態規劃的兩個核心性質，並舉一例說明",answer:"最優子結構：最優解包含子問題最優解；重疊子問題：子問題被重複計算。例：Fibonacci 從 $O(2^n)$ 用 memoization 降至 $O(n)$。",category:"Dynamic Programming"},
+    {question:"解釋動態規劃的兩個核心性質，並舉一例說明",answer:"最優子結構 + 重疊子問題。例：Fibonacci 從 $O(2^n)$ 用 memoization 降至 $O(n)$。",category:"Dynamic Programming"},
   ].map(s=>createCard(s.question,s.answer,s.category));
 }
 
-// ── HOME ──
-function renderHome() {
-  const now=Date.now(), due=cards.filter(c=>c.nextReview<=now), mastered=cards.filter(c=>c.repetitions>=3);
+// CATEGORY MANAGER
+function populateCatSelect(){
+  const sel=document.getElementById('f-category'); if(!sel)return;
+  sel.innerHTML=categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+function renderCatList(){
+  const el=document.getElementById('cat-list'); if(!el)return;
+  el.innerHTML=categories.map((cat,i)=>`
+    <div class="cat-item">
+      ${badgeHtml(cat)}
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="muted">${cards.filter(c=>c.category===cat).length} 題</span>
+        ${i<DEFAULT_CATS.length-1?'<span class="muted" style="font-size:11px">預設</span>':`<button class="btn-sm danger" onclick="deleteCat('${cat}')">刪除</button>`}
+      </div>
+    </div>`).join('');
+}
+function addCategory(){
+  const inp=document.getElementById('new-cat-name');
+  const name=inp.value.trim();
+  if(!name){alert('請輸入分類名稱');return}
+  if(categories.includes(name)){alert('此分類已存在');return}
+  categories.push(name); inp.value='';
+  saveToDrive().catch(()=>{});
+  renderCatList();
+}
+async function deleteCat(cat){
+  if(!confirm(`刪除分類「${cat}」？該分類的題目將歸入「其他」`))return;
+  cards=cards.map(c=>c.category===cat?{...c,category:'其他'}:c);
+  categories=categories.filter(c=>c!==cat);
+  loading(true,'儲存中…');await saveToDrive();loading(false);
+  renderCatList();
+}
+
+// HOME
+function renderHome(){
+  const now=Date.now(),due=cards.filter(c=>c.nextReview<=now),mastered=cards.filter(c=>c.repetitions>=3);
   const hr=new Date().getHours();
-  document.getElementById('home-greeting').textContent = hr<12?'早安！':hr<18?'午安！':'晚安！';
-  const catStats = CATS.map(cat=>{
+  document.getElementById('home-greeting').textContent=hr<12?'早安！':hr<18?'午安！':'晚安！';
+  const catStats=categories.map(cat=>{
     const tot=cards.filter(c=>c.category===cat).length;
     const d=cards.filter(c=>c.category===cat&&c.nextReview<=now).length;
     return tot?`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">${badgeHtml(cat)}<span class="muted">${tot} 題${d>0?`，${d} 待複習`:''}</span></div>`:'';
   }).join('');
-  document.getElementById('home-body').innerHTML = `
+  document.getElementById('home-body').innerHTML=`
     <div class="stat-grid">
       <div class="stat-cell"><div class="stat-num" style="color:var(--accent)">${cards.length}</div><div class="stat-lbl">題庫總數</div></div>
       <div class="stat-cell"><div class="stat-num" style="color:${due.length>0?'var(--danger)':'var(--success)'}">${due.length}</div><div class="stat-lbl">今日待複習</div></div>
@@ -374,16 +434,16 @@ function renderHome() {
   `;
 }
 
-// ── QUIZ ──
-function startQuiz() {
+// QUIZ
+function startQuiz(){
   const due=cards.filter(c=>c.nextReview<=Date.now());
-  if (!due.length){alert('今日沒有待複習題目！');return;}
-  quizQueue=[...due].sort(()=>Math.random()-.5); quizIdx=0;
-  showScreen('quiz'); renderQuiz();
+  if(!due.length){alert('今日沒有待複習題目！');return}
+  quizQueue=[...due].sort(()=>Math.random()-.5);quizIdx=0;
+  showScreen('quiz');renderQuiz();
 }
-function exitQuiz(){showScreen('home');renderHome();}
-function renderQuiz() {
-  const card=quizQueue[quizIdx], pct=Math.round((quizIdx/quizQueue.length)*100);
+function exitQuiz(){showScreen('home');renderHome()}
+function renderQuiz(){
+  const card=quizQueue[quizIdx],pct=Math.round((quizIdx/quizQueue.length)*100);
   document.getElementById('quiz-cat').textContent=card.category;
   document.getElementById('quiz-progress').textContent=`${quizIdx+1} / ${quizQueue.length}`;
   document.getElementById('quiz-pct').textContent=pct+'%';
@@ -394,68 +454,112 @@ function renderQuiz() {
       <div class="math-render" style="font-size:15px;line-height:1.8">${renderMath(card.question)}</div>
     </div>
     <div class="card">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span class="muted" style="font-size:12px;font-weight:700">手寫作答</span>
-        <div style="flex:1"></div>
-        ${[2,3,5].map(ps=>`<button class="pen-btn${penSize===ps?' active':''}" onclick="setPen(${ps})"><div style="width:${ps*2}px;height:${ps*2}px;border-radius:50%;background:#1a1a1a"></div></button>`).join('')}
-        <button class="btn-sm danger" onclick="clearCanvas()">清除</button>
+      <div class="mode-toggle">
+        <button class="mode-btn${answerMode==='draw'?' active':''}" onclick="switchMode('draw')">✏️ 手寫</button>
+        <button class="mode-btn${answerMode==='type'?' active':''}" onclick="switchMode('type')">⌨️ 打字</button>
       </div>
-      <canvas id="draw-canvas" width="500" height="260" style="border:1px solid var(--border);border-radius:var(--radius-sm);height:220px;display:block;width:100%"></canvas>
+      <div id="answer-area"></div>
     </div>
     <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">提交答案，AI 批改</button>
   `;
-  initCanvas();
+  renderAnswerArea();
 }
-function initCanvas() {
-  const c=document.getElementById('draw-canvas'); if(!c) return;
-  const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
-  c.addEventListener('mousedown',onDown); c.addEventListener('mousemove',onMove);
-  c.addEventListener('mouseup',onUp); c.addEventListener('mouseleave',onUp);
-  c.addEventListener('touchstart',onDown,{passive:false}); c.addEventListener('touchmove',onMove,{passive:false}); c.addEventListener('touchend',onUp);
-}
-function getXY(e) {
-  const c=document.getElementById('draw-canvas'), r=c.getBoundingClientRect();
-  const sx=c.width/r.width, sy=c.height/r.height, src=e.touches?e.touches[0]:e;
-  return {x:(src.clientX-r.left)*sx, y:(src.clientY-r.top)*sy};
-}
-function onDown(e){e.preventDefault();isDrawing=true;lastPos=getXY(e);}
-function onMove(e){
-  e.preventDefault(); if(!isDrawing) return;
-  const c=document.getElementById('draw-canvas'), ctx=c.getContext('2d'), pos=getXY(e);
-  ctx.beginPath(); ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=penSize; ctx.lineCap='round'; ctx.lineJoin='round';
-  ctx.moveTo(lastPos.x,lastPos.y); ctx.lineTo(pos.x,pos.y); ctx.stroke(); lastPos=pos;
-}
-function onUp(){isDrawing=false;}
-function clearCanvas(){const c=document.getElementById('draw-canvas');if(!c)return;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
-function setPen(s){penSize=s;document.querySelectorAll('.pen-btn').forEach((b,i)=>b.classList.toggle('active',[2,3,5][i]===s));}
 
-async function submitAnswer() {
+function switchMode(mode){
+  answerMode=mode;
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('active',['draw','type'][i]===mode));
+  renderAnswerArea();
+}
+
+function renderAnswerArea(){
+  const area=document.getElementById('answer-area'); if(!area)return;
+  if(answerMode==='draw'){
+    area.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        ${[2,3,5].map(ps=>`<button class="pen-btn${penSize===ps?' active':''}" onclick="setPen(${ps})"><div style="width:${ps*2}px;height:${ps*2}px;border-radius:50%;background:#1a1a1a"></div></button>`).join('')}
+        <div style="flex:1"></div>
+        <button class="btn-sm danger" onclick="clearCanvas()">清除</button>
+      </div>
+      <canvas id="draw-canvas" width="500" height="260" style="border:1px solid var(--border);border-radius:var(--radius-sm);height:220px;display:block;width:100%"></canvas>
+    `;
+    initCanvas();
+  }else{
+    area.innerHTML=`
+      <div class="math-toolbar" id="toolbar-quiz"></div>
+      <textarea class="type-area" id="type-answer" placeholder="在這裡輸入你的答案…&#10;數學式用 $…$ 包住，例如 $O(n^2)$" oninput="updateTypePreview()"></textarea>
+      <div class="math-hint">▸ 預覽</div>
+      <div class="math-preview math-render" id="type-preview"></div>
+    `;
+    buildToolbar('toolbar-quiz','type-answer');
+  }
+}
+function updateTypePreview(){
+  const ta=document.getElementById('type-answer');
+  const pv=document.getElementById('type-preview');
+  if(ta&&pv)pv.innerHTML=renderMath(ta.value);
+}
+
+// Canvas
+function initCanvas(){
+  const c=document.getElementById('draw-canvas');if(!c)return;
+  const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+  c.addEventListener('mousedown',onDown);c.addEventListener('mousemove',onMove);
+  c.addEventListener('mouseup',onUp);c.addEventListener('mouseleave',onUp);
+  c.addEventListener('touchstart',onDown,{passive:false});c.addEventListener('touchmove',onMove,{passive:false});c.addEventListener('touchend',onUp);
+}
+function getXY(e){
+  const c=document.getElementById('draw-canvas'),r=c.getBoundingClientRect();
+  const sx=c.width/r.width,sy=c.height/r.height,src=e.touches?e.touches[0]:e;
+  return{x:(src.clientX-r.left)*sx,y:(src.clientY-r.top)*sy};
+}
+function onDown(e){e.preventDefault();isDrawing=true;lastPos=getXY(e)}
+function onMove(e){
+  e.preventDefault();if(!isDrawing)return;
+  const c=document.getElementById('draw-canvas'),ctx=c.getContext('2d'),pos=getXY(e);
+  ctx.beginPath();ctx.strokeStyle='#1a1a1a';ctx.lineWidth=penSize;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.moveTo(lastPos.x,lastPos.y);ctx.lineTo(pos.x,pos.y);ctx.stroke();lastPos=pos;
+}
+function onUp(){isDrawing=false}
+function clearCanvas(){const c=document.getElementById('draw-canvas');if(!c)return;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height)}
+function setPen(s){penSize=s;document.querySelectorAll('.pen-btn').forEach((b,i)=>b.classList.toggle('active',[2,3,5][i]===s))}
+
+// Submit
+async function submitAnswer(){
   const btn=document.getElementById('submit-btn');
-  if(btn){btn.disabled=true;btn.textContent='AI 批改中…';}
+  if(btn){btn.disabled=true;btn.textContent='AI 批改中…'}
   const card=quizQueue[quizIdx];
-  const imgData=document.getElementById('draw-canvas').toDataURL('image/jpeg',0.85).split(',')[1];
+  let msgContent;
+  if(answerMode==='draw'){
+    const imgData=document.getElementById('draw-canvas').toDataURL('image/jpeg',0.85).split(',')[1];
+    msgContent=[
+      {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}},
+      {type:'text',text:`題目：${card.question}\n\n標準答案：${card.answer}\n\n請判斷圖片中手寫答案是否正確。`}
+    ];
+  }else{
+    const typed=document.getElementById('type-answer')?.value?.trim()||'';
+    if(!typed){alert('請輸入答案');if(btn){btn.disabled=false;btn.textContent='提交答案，AI 批改'}return}
+    msgContent=[{type:'text',text:`題目：${card.question}\n\n標準答案：${card.answer}\n\n學生的打字答案：${typed}\n\n請判斷學生答案是否正確。`}];
+  }
   let result;
-  try {
+  try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({
-        model:'claude-opus-4-5', max_tokens:300,
-        system:`你是資料結構考試批改老師。根據題目和標準答案，判斷圖片中學生手寫答案是否正確（大意正確即可）。只回傳 JSON：{"correct": true/false, "feedback": "一句說明（繁體中文，30字內）"}`,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}},
-          {type:'text',text:`題目：${card.question}\n\n標準答案：${card.answer}`}
-        ]}]
+        model:'claude-haiku-4-5-20251001',  // 使用 Haiku，費用約 Opus 的 1/20
+        max_tokens:200,
+        system:`你是資料結構考試批改老師。判斷學生答案是否正確（大意正確即可）。只回傳 JSON：{"correct": true/false, "feedback": "一句說明（繁體中文，25字內）"}`,
+        messages:[{role:'user',content:msgContent}]
       })
     });
     const data=await res.json();
     result=JSON.parse((data.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
-  } catch(e) { result={correct:null,feedback:'批改失敗，請確認 API Key'}; }
+  }catch(e){result={correct:null,feedback:'批改失敗，請確認 API Key'}}
 
   if(result.correct!==null){
     const updated=applySmTwo(card,result.correct);
     cards=cards.map(c=>c.id===card.id?updated:c);
-    try{await saveToDrive();}catch(e){}
+    try{await saveToDrive()}catch(e){}
   }
   const intv=result.correct?(card.interval<=1?'明天':card.interval<=6?'6 天後':`${card.interval} 天後`):'明天重試';
   const nextLbl=quizIdx+1>=quizQueue.length?'完成今日複習 ✓':'下一題 →';
@@ -476,12 +580,12 @@ async function submitAnswer() {
   window.scrollTo(0,document.body.scrollHeight);
 }
 function nextCard(){
-  if(quizIdx+1>=quizQueue.length){showScreen('home');renderHome();return;}
-  quizIdx++; renderQuiz(); window.scrollTo(0,0);
+  if(quizIdx+1>=quizQueue.length){showScreen('home');renderHome();return}
+  quizIdx++;renderQuiz();window.scrollTo(0,0);
 }
 
-// ── MANAGE ──
-function renderManage() {
+// MANAGE
+function renderManage(){
   const q=(document.getElementById('search-input')?.value||'').toLowerCase();
   const filtered=cards.filter(c=>!q||c.question.toLowerCase().includes(q)||c.category.toLowerCase().includes(q));
   const now=Date.now();
@@ -492,7 +596,7 @@ function renderManage() {
         <div style="display:flex;align-items:flex-start;gap:10px">
           <div style="flex:1;min-width:0">
             ${badgeHtml(c.category)}
-            <div style="font-size:13px;margin-top:6px;line-height:1.55">${c.question.replace(/\$([^$\n]+)\$/g,(_,e)=>{try{return katex.renderToString(e,{throwOnError:false});}catch(ex){return '$'+e+'$';}})}</div>
+            <div style="font-size:13px;margin-top:6px;line-height:1.55">${c.question.replace(/\$([^$\n]+)\$/g,(_,e)=>{try{return katex.renderToString(e,{throwOnError:false})}catch(ex){return'$'+e+'$'}})}</div>
             <div class="muted" style="margin-top:5px">複習 ${c.repetitions} 次・${c.nextReview<=now?'今日待複習':Math.ceil((c.nextReview-now)/86400000)+' 天後'}</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0">
@@ -502,10 +606,11 @@ function renderManage() {
         </div>
       </div>`).join('');
 }
-function openAddNew() {
+function openAddNew(){
   editId=null;
   document.getElementById('add-title').textContent='新增題目';
-  document.getElementById('f-category').value='Tree';
+  populateCatSelect();
+  document.getElementById('f-category').value=categories[0]||'其他';
   document.getElementById('f-question').value='';
   document.getElementById('f-answer').value='';
   document.getElementById('preview-q').innerHTML='';
@@ -514,49 +619,45 @@ function openAddNew() {
   buildToolbar('toolbar-a','f-answer');
   showScreen('add');
 }
-function openEdit(id) {
-  const c=cards.find(x=>x.id===id); if(!c) return;
+function openEdit(id){
+  const c=cards.find(x=>x.id===id);if(!c)return;
   editId=id;
   document.getElementById('add-title').textContent='編輯題目';
+  populateCatSelect();
   document.getElementById('f-category').value=c.category;
   document.getElementById('f-question').value=c.question;
   document.getElementById('f-answer').value=c.answer;
   buildToolbar('toolbar-q','f-question');
   buildToolbar('toolbar-a','f-answer');
-  updatePreview('q'); updatePreview('a');
+  updatePreview('q');updatePreview('a');
   showScreen('add');
 }
-async function saveCard() {
+async function saveCard(){
   const cat=document.getElementById('f-category').value;
   const q=document.getElementById('f-question').value.trim();
   const a=document.getElementById('f-answer').value.trim();
-  if(!q||!a){alert('請填寫題目和答案');return;}
-  if(editId) cards=cards.map(c=>c.id===editId?{...c,category:cat,question:q,answer:a}:c);
+  if(!q||!a){alert('請填寫題目和答案');return}
+  if(editId)cards=cards.map(c=>c.id===editId?{...c,category:cat,question:q,answer:a}:c);
   else cards.push(createCard(q,a,cat));
   loading(true,'儲存中…');
-  try{await saveToDrive();}catch(e){alert('儲存失敗，請重試');}
-  loading(false); editId=null;
-  showScreen('manage'); renderManage();
+  try{await saveToDrive()}catch(e){alert('儲存失敗，請重試')}
+  loading(false);editId=null;showScreen('manage');renderManage();
 }
-async function deleteCard(id) {
-  if(!confirm('確定刪除此題目？')) return;
+async function deleteCard(id){
+  if(!confirm('確定刪除此題目？'))return;
   cards=cards.filter(c=>c.id!==id);
-  loading(true,'刪除中…');
-  try{await saveToDrive();}catch(e){}
-  loading(false); renderManage();
+  loading(true,'刪除中…');try{await saveToDrive()}catch(e){}loading(false);renderManage();
 }
 
-// ── INIT ──
-window.addEventListener('load', () => {
+// INIT
+window.addEventListener('load',()=>{
   loading(false);
-  if (!getApiKey()) { showScreen('setup'); return; }
-  const wait = setInterval(() => {
-    if (window.google?.accounts?.oauth2) {
-      clearInterval(wait);
-      initGoogleAuth();
-      showScreen('login');
+  if(!getApiKey()){showScreen('setup');return}
+  const wait=setInterval(()=>{
+    if(window.google?.accounts?.oauth2){
+      clearInterval(wait);initGoogleAuth();showScreen('login');
     }
-  }, 100);
+  },100);
 });
 </script>
 </body>
