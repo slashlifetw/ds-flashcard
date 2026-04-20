@@ -333,10 +333,15 @@ function badgeHtml(cat){
 
 // ── MATH ──
 function renderMath(text){
-  if(!window.katex||!text){
-    return(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  if(!text) return '';
+  // Normalize line endings: 
+ or  -> 
+
+  const t = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  if(!window.katex){
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
   }
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\$([^$\n]+)\$/g,(_,e)=>{try{return katex.renderToString(e,{throwOnError:false})}catch(ex){return'$'+e+'$'}})
     .replace(/\n/g,'<br>');
 }
