@@ -335,11 +335,7 @@ function badgeHtml(cat){
 // ── MATH ──
 function renderMath(text){
   if(!text) return '';
-  // Normalize line endings: 
- or 
- -> 
-
-  const t = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const t=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
   if(!window.katex){
     return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
   }
