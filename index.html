@@ -226,15 +226,77 @@ const FILE_NAME="ds_flashcards.json";
 const PROTECTED_CAT="其他";
 const DEFAULT_CATS=["Tree","Graph","Sorting","Hashing","Heap","Dynamic Programming","其他"];
 const CAT_COLORS=["#ede9fe:#5b21b6","#d1fae5:#065f46","#fef9c3:#854d0e","#fee2e2:#991b1b","#fce7f3:#9d174d","#dbeafe:#1e3a8a","#f1f5f9:#475569","#fef3c7:#92400e","#fae8ff:#7e22ce","#dcfce7:#166534","#fce7f3:#9d174d","#dbeafe:#1e3a8a","#fff1f2:#9f1239","#ecfdf5:#065f46"];
+// Math symbol groups (題目/答案輸入工具列用)
+const MATH_GROUPS=[
+  {group:"複雜度",syms:[
+    {l:"O(n)",v:"$O(n)$"},{l:"O(n²)",v:"$O(n^2)$"},{l:"O(n³)",v:"$O(n^3)$"},
+    {l:"O(n log n)",v:"$O(n \\log n)$"},{l:"O(log n)",v:"$O(\\log n)$"},
+    {l:"O(2ⁿ)",v:"$O(2^n)$"},{l:"O(n!)",v:"$O(n!)$"},{l:"O(√n)",v:"$O(\\sqrt{n})$"},
+    {l:"Ω(n)",v:"$\\Omega(n)$"},{l:"Θ(n)",v:"$\\Theta(n)$"},
+    {l:"ω(n)",v:"$\\omega(n)$"},{l:"o(n)",v:"$o(n)$"},
+  ]},
+  {group:"對數",syms:[
+    {l:"log",v:"$\\log$"},{l:"log₂",v:"$\\log_2$"},{l:"logₙ",v:"$\\log_{}$"},
+    {l:"lg",v:"$\\lg$"},{l:"ln",v:"$\\ln$"},{l:"log²n",v:"$\\log^2 n$"},
+  ]},
+  {group:"分數",syms:[
+    {l:"a/b",v:"$\\frac{a}{b}$"},{l:"1/2",v:"$\\frac{1}{2}$"},
+    {l:"1/n",v:"$\\frac{1}{n}$"},{l:"(n-1)/2",v:"$\\frac{n-1}{2}$"},
+    {l:"n/log n",v:"$\\frac{n}{\\log n}$"},
+  ]},
+  {group:"上下標",syms:[
+    {l:"xⁿ",v:"$x^{}$"},{l:"xₙ",v:"$x_{}$"},{l:"xⁿₘ",v:"$x_{}^{}$"},
+    {l:"2ⁿ",v:"$2^{n}$"},{l:"nᵏ",v:"$n^{k}$"},{l:"aᵢⱼ",v:"$a_{ij}$"},
+  ]},
+  {group:"根號/取整",syms:[
+    {l:"√n",v:"$\\sqrt{n}$"},{l:"√x",v:"$\\sqrt{x}$"},{l:"∛n",v:"$\\sqrt[3]{n}$"},
+    {l:"⌈x⌉",v:"$\\lceil x \\rceil$"},{l:"⌊x⌋",v:"$\\lfloor x \\rfloor$"},
+  ]},
+  {group:"求和/積分",syms:[
+    {l:"∑",v:"$\\sum_{i=1}^{n}$"},{l:"∏",v:"$\\prod_{i=1}^{n}$"},
+    {l:"∫",v:"$\\int_{a}^{b}$"},{l:"C(n,k)",v:"$\\binom{n}{k}$"},{l:"n!",v:"$n!$"},
+  ]},
+  {group:"比較/符號",syms:[
+    {l:"≤",v:"$\\leq$"},{l:"≥",v:"$\\geq$"},{l:"≠",v:"$\\neq$"},{l:"≈",v:"$\\approx$"},
+    {l:"∞",v:"$\\infty$"},{l:"→",v:"$\\rightarrow$"},{l:"⇒",v:"$\\Rightarrow$"},
+    {l:"⟺",v:"$\\Leftrightarrow$"},{l:"←",v:"$\\leftarrow$"},
+  ]},
+  {group:"集合",syms:[
+    {l:"∈",v:"$\\in$"},{l:"∉",v:"$\\notin$"},{l:"⊆",v:"$\\subseteq$"},
+    {l:"⊂",v:"$\\subset$"},{l:"∪",v:"$\\cup$"},{l:"∩",v:"$\\cap$"},
+    {l:"∅",v:"$\\emptyset$"},
+  ]},
+  {group:"邏輯",syms:[
+    {l:"∀",v:"$\\forall$"},{l:"∃",v:"$\\exists$"},{l:"¬",v:"$\\neg$"},
+    {l:"∧",v:"$\\land$"},{l:"∨",v:"$\\lor$"},
+  ]},
+  {group:"希臘字母",syms:[
+    {l:"α",v:"$\\alpha$"},{l:"β",v:"$\\beta$"},{l:"γ",v:"$\\gamma$"},
+    {l:"δ",v:"$\\delta$"},{l:"ε",v:"$\\epsilon$"},{l:"λ",v:"$\\lambda$"},
+    {l:"μ",v:"$\\mu$"},{l:"π",v:"$\\pi$"},{l:"σ",v:"$\\sigma$"},
+    {l:"φ",v:"$\\phi$"},{l:"ω",v:"$\\omega$"},{l:"Ω",v:"$\\Omega$"},
+    {l:"Θ",v:"$\\Theta$"},{l:"Γ",v:"$\\Gamma$"},{l:"Δ",v:"$\\Delta$"},
+  ]},
+];
+// Flat list for quiz quick-insert (most frequent)
 const MATH_SYMS=[
   {l:"O(n)",v:"$O(n)$"},{l:"O(n²)",v:"$O(n^2)$"},{l:"O(n log n)",v:"$O(n \\log n)$"},
   {l:"O(log n)",v:"$O(\\log n)$"},{l:"Ω(n)",v:"$\\Omega(n)$"},{l:"Θ(n)",v:"$\\Theta(n)$"},
-  {l:"log",v:"$\\log$"},{l:"lg",v:"$\\lg$"},{l:"√n",v:"$\\sqrt{n}$"},
-  {l:"≤",v:"$\\leq$"},{l:"≥",v:"$\\geq$"},{l:"∞",v:"$\\infty$"},
-  {l:"xⁿ",v:"$x^{}$"},{l:"xₙ",v:"$x_{}$"},{l:"∑",v:"$\\sum_{i=1}^{n}$"},
+  {l:"ω(n)",v:"$\\omega(n)$"},{l:"o(n)",v:"$o(n)$"},
+  {l:"log",v:"$\\log$"},{l:"ln",v:"$\\ln$"},{l:"lg",v:"$\\lg$"},{l:"log₂",v:"$\\log_2$"},
+  {l:"a/b",v:"$\\frac{a}{b}$"},{l:"1/n",v:"$\\frac{1}{n}$"},
+  {l:"√n",v:"$\\sqrt{n}$"},{l:"2ⁿ",v:"$2^{n}$"},
+  {l:"≤",v:"$\\leq$"},{l:"≥",v:"$\\geq$"},{l:"≠",v:"$\\neq$"},{l:"∞",v:"$\\infty$"},
+  {l:"xⁿ",v:"$x^{}$"},{l:"xₙ",v:"$x_{}$"},
+  {l:"∑",v:"$\\sum_{i=1}^{n}$"},{l:"∏",v:"$\\prod_{i=1}^{n}$"},
   {l:"⌈x⌉",v:"$\\lceil x \\rceil$"},{l:"⌊x⌋",v:"$\\lfloor x \\rfloor$"},
-  {l:"n!",v:"$n!$"},{l:"→",v:"$\\rightarrow$"},{l:"∀",v:"$\\forall$"},
-];
+  {l:"C(n,k)",v:"$\\binom{n}{k}$"},{l:"n!",v:"$n!$"},
+  {l:"∈",v:"$\\in$"},{l:"⊆",v:"$\\subseteq$"},{l:"∪",v:"$\\cup$"},{l:"∩",v:"$\\cap$"},
+  {l:"→",v:"$\\rightarrow$"},{l:"⇒",v:"$\\Rightarrow$"},
+  {l:"∀",v:"$\\forall$"},{l:"∃",v:"$\\exists$"},{l:"∧",v:"$\\land$"},{l:"∨",v:"$\\lor$"},
+  {l:"α",v:"$\\alpha$"},{l:"β",v:"$\\beta$"},{l:"λ",v:"$\\lambda$"},
+  {l:"π",v:"$\\pi$"},{l:"ω",v:"$\\omega$"},{l:"Δ",v:"$\\Delta$"},
+]
 
 let accessToken=null,driveFileId=null,cards=[],categories=[...DEFAULT_CATS];
 let editId=null,quizQueue=[],quizIdx=0,penSize=3,isDrawing=false,lastPos=null;
@@ -282,11 +344,36 @@ function updatePreview(f){
 }
 function buildToolbar(tid,targetId){
   const tb=document.getElementById(tid);if(!tb)return;
-  tb.innerHTML='<span style="font-size:11px;color:var(--muted);align-self:center;flex-shrink:0;margin-right:2px">插入：</span>';
-  MATH_SYMS.forEach(s=>{
-    const b=document.createElement('button');b.className='math-btn';b.textContent=s.l;b.type='button';
-    b.addEventListener('click',()=>insertAt(document.getElementById(targetId),s.v));tb.appendChild(b);
+  tb.innerHTML='';
+  // Group tabs
+  const tabBar=document.createElement('div');
+  tabBar.style.cssText='display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border)';
+  const symArea=document.createElement('div');
+  symArea.style.cssText='display:flex;flex-wrap:wrap;gap:4px';
+
+  function showGroup(idx){
+    symArea.innerHTML='';
+    tabBar.querySelectorAll('.gtab').forEach((t,i)=>t.style.background=i===idx?'var(--accent)':'var(--surface)');
+    tabBar.querySelectorAll('.gtab').forEach((t,i)=>t.style.color=i===idx?'#fff':'var(--accent-text)');
+    MATH_GROUPS[idx].syms.forEach(s=>{
+      const b=document.createElement('button');
+      b.className='math-btn';b.textContent=s.l;b.type='button';
+      b.addEventListener('click',()=>insertAt(document.getElementById(targetId),s.v));
+      symArea.appendChild(b);
+    });
+  }
+
+  MATH_GROUPS.forEach((g,i)=>{
+    const t=document.createElement('button');
+    t.className='gtab';t.textContent=g.group;t.type='button';
+    t.style.cssText='padding:3px 9px;font-size:11px;font-weight:600;border:1px solid var(--accent);border-radius:20px;cursor:pointer;background:var(--surface);color:var(--accent-text);white-space:nowrap';
+    t.addEventListener('click',()=>showGroup(i));
+    tabBar.appendChild(t);
   });
+
+  tb.appendChild(tabBar);
+  tb.appendChild(symArea);
+  showGroup(0);
 }
 function insertAt(ta,text){
   if(!ta)return;ta.focus();
