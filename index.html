@@ -301,6 +301,7 @@ const MATH_SYMS=[
 let accessToken=null,driveFileId=null,cards=[],categories=[...DEFAULT_CATS];
 let editId=null,quizQueue=[],quizIdx=0,penSize=3,isDrawing=false,lastPos=null;
 let answerMode='draw';
+let ocrEnabled=localStorage.getItem('ocrEnabled')==='true'; // default OFF
 let ocrTimer=null; // debounce for OCR preview
 
 // ── SCREEN ──
@@ -335,7 +336,8 @@ function badgeHtml(cat){
 function renderMath(text){
   if(!text) return '';
   // Normalize line endings: 
- or  -> 
+ or 
+ -> 
 
   const t = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
   if(!window.katex){
@@ -668,9 +670,15 @@ function renderAnswerZone(){
         </div>
         <canvas id="draw-canvas" width="500" height="260" style="height:220px;display:block;width:100%;background:#fff"></canvas>
       </div>
-      <div class="preview-label">答案辨識預覽（停筆後自動辨識）</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="preview-label" style="margin-bottom:0">辨識預覽</div>
+        <button onclick="toggleOcr()" id="ocr-toggle-btn"
+          style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--accent);background:var(--accent-light);color:var(--accent-text);cursor:pointer">
+          辨識文字
+        </button>
+      </div>
       <div class="ocr-preview" id="ocr-preview">
-        <span style="color:var(--hint)">開始手寫後自動辨識…</span>
+        <span style="color:var(--hint)">寫完後按「辨識文字」查看辨識結果</span>
       </div>`;
     initCanvas();
   }else{
@@ -705,9 +713,7 @@ function onMove(e){
 }
 function onUp(){
   isDrawing=false;
-  // Debounce OCR: wait 1.5s after last stroke
-  clearTimeout(ocrTimer);
-  ocrTimer=setTimeout(runOcrPreview, 1500);
+  // Auto OCR disabled - user triggers manually
 }
 function clearCanvas(){
   const c=document.getElementById('draw-canvas');if(!c)return;
@@ -719,9 +725,38 @@ function clearCanvas(){
 function setPen(s){penSize=s;document.querySelectorAll('.pen-btn').forEach((b,i)=>b.classList.toggle('active',[2,3,5][i]===s))}
 
 // ── OCR PREVIEW ──
+function toggleOcr(){
+  ocrEnabled=!ocrEnabled;
+  localStorage.setItem('ocrEnabled', ocrEnabled);
+  const btn=document.getElementById('ocr-toggle-btn');
+  const pv=document.getElementById('ocr-preview');
+  if(btn){
+    btn.textContent=ocrEnabled?'辨識中…':'辨識文字';
+    btn.style.borderColor=ocrEnabled?'var(--success)':'var(--accent)';
+    btn.style.background=ocrEnabled?'var(--success-bg)':'var(--accent-light)';
+    btn.style.color=ocrEnabled?'var(--success)':'var(--accent-text)';
+    btn.disabled=true;
+  }
+  if(ocrEnabled){
+    // Trigger OCR immediately
+    runOcrPreview().finally(()=>{
+      ocrEnabled=false;
+      localStorage.setItem('ocrEnabled','false');
+      if(btn){
+        btn.textContent='辨識文字';
+        btn.style.borderColor='var(--accent)';
+        btn.style.background='var(--accent-light)';
+        btn.style.color='var(--accent-text)';
+        btn.disabled=false;
+      }
+    });
+  }
+}
+
 async function runOcrPreview(){
   const c=document.getElementById('draw-canvas');if(!c)return;
   const pv=document.getElementById('ocr-preview');if(!pv)return;
+  if(!ocrEnabled) return; // OCR is disabled
 
   // Check if canvas is blank
   const ctx=c.getContext('2d');
