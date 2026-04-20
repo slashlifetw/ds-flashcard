@@ -62,7 +62,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 .preview-label{font-size:10px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
 .type-area{width:100%;min-height:160px;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;resize:vertical;background:var(--surface);color:var(--text);margin-bottom:10px;display:block}
 .type-area:focus{outline:none;border-color:var(--accent)}
-.answer-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;min-height:52px;margin-bottom:10px;font-size:14px;line-height:1.8;color:var(--muted)}
+.answer-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;min-height:52px;margin-bottom:10px;font-size:14px;line-height:1.8;color:var(--muted);word-break:break-word}
 .answer-preview.has-content{color:var(--text)}
 .result-card{border-radius:var(--radius);padding:16px;margin-bottom:10px}
 .result-card.correct{background:var(--success-bg);border:1px solid var(--success-border)}
@@ -72,7 +72,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 .math-btn{padding:4px 8px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer;color:var(--accent-text);white-space:nowrap;font-family:'Courier New',monospace}
 .math-btn:active{background:var(--accent-light)}
 .math-hint{font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:6px}
-.math-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;min-height:36px;margin-bottom:12px;font-size:13px;line-height:1.9}
+.math-preview{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;min-height:36px;margin-bottom:12px;font-size:13px;line-height:1.9;word-break:break-word}
 .math-render .katex{font-size:1em}
 .cat-item{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
 .cat-item:last-child{border-bottom:none}
@@ -333,9 +333,12 @@ function badgeHtml(cat){
 
 // ── MATH ──
 function renderMath(text){
-  if(!window.katex||!text)return(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  if(!window.katex||!text){
+    return(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
   return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\$([^$\n]+)\$/g,(_,e)=>{try{return katex.renderToString(e,{throwOnError:false})}catch(ex){return'$'+e+'$'}});
+    .replace(/\$([^$\n]+)\$/g,(_,e)=>{try{return katex.renderToString(e,{throwOnError:false})}catch(ex){return'$'+e+'$'}})
+    .replace(/\n/g,'<br>');
 }
 function updatePreview(f){
   const ta=document.getElementById(f==='q'?'f-question':'f-answer');
@@ -731,10 +734,10 @@ async function runOcrPreview(){
       headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({
         model:'claude-haiku-4-5-20251001',max_tokens:300,
-        system:'請辨識圖片中的手寫文字並原文轉錄，保留數學符號。只輸出辨識結果，不要任何說明或標點符號以外的文字。',
+        system:'請辨識圖片中的手寫文字並完整轉錄。規則：1.每一行手寫文字對應輸出一行，保留換行。2.保留所有數學符號和運算式。3.只輸出辨識結果，不加任何說明。',
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}},
-          {type:'text',text:'請辨識這張圖片中的手寫內容並轉錄成文字。'}
+          {type:'text',text:'請辨識這張圖片中的手寫內容，每行手寫對應輸出一行文字，保留換行。'}
         ]}]
       })
     });
@@ -742,6 +745,7 @@ async function runOcrPreview(){
     const text=(data.content?.[0]?.text||'').trim();
     if(text){
       pv.classList.add('has-content');
+      // renderMath already converts \n to <br>
       pv.innerHTML=renderMath(text);
     }else{
       pv.innerHTML='<span style="color:var(--hint)">無法辨識，請繼續書寫</span>';
