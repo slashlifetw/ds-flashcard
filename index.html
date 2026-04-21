@@ -298,7 +298,7 @@ const MATH_SYMS=[
   {l:"π",v:"$\\pi$"},{l:"ω",v:"$\\omega$"},{l:"Δ",v:"$\\Delta$"},
 ]
 
-let accessToken=null,driveFileId=null,cards=[],categories=[...DEFAULT_CATS];
+let accessToken=null,tokenExpiry=0,driveFileId=null,cards=[],categories=[...DEFAULT_CATS];
 let editId=null,quizQueue=[],quizIdx=0,penSize=3,isDrawing=false,lastPos=null;
 let answerMode='draw';
 let ocrEnabled=localStorage.getItem('ocrEnabled')==='true'; // default OFF
@@ -403,6 +403,8 @@ function initGoogleAuth(){
     callback:async resp=>{
       if(resp.error){alert('Google 登入失敗：'+resp.error);return}
       accessToken=resp.access_token;
+      // Token expires in 3600s, store expiry time
+      tokenExpiry=Date.now()+3500*1000;
       loading(true,'讀取雲端資料…');await loadDriveData();loading(false);
       showScreen('home');renderHome();
     }
@@ -415,8 +417,35 @@ function signOut(){
 }
 
 // ── DRIVE ──
+async function refreshTokenIfNeeded(){
+  if(!tokenClient) return;
+  if(Date.now()<tokenExpiry) return; // still valid
+  return new Promise((resolve)=>{
+    tokenClient.requestAccessToken({prompt:'none',callback:(resp)=>{
+      if(resp.access_token){
+        accessToken=resp.access_token;
+        tokenExpiry=Date.now()+3500*1000;
+      }
+      resolve();
+    }});
+  });
+}
+
 async function driveReq(url,opts={}){
+  await refreshTokenIfNeeded();
   const r=await fetch(url,{...opts,headers:{"Authorization":"Bearer "+accessToken,...(opts.headers||{})}});
+  if(r.status===401){
+    // Force token refresh on 401
+    await new Promise((resolve)=>{
+      tokenClient.requestAccessToken({prompt:'none',callback:(resp)=>{
+        if(resp.access_token){accessToken=resp.access_token;tokenExpiry=Date.now()+3500*1000;}
+        resolve();
+      }});
+    });
+    const r2=await fetch(url,{...opts,headers:{"Authorization":"Bearer "+accessToken,...(opts.headers||{})}});
+    if(!r2.ok)throw new Error("Drive "+r2.status);
+    return r2;
+  }
   if(!r.ok)throw new Error("Drive "+r.status);return r;
 }
 async function loadDriveData(){
